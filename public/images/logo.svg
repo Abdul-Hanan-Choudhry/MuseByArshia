@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 260">
+
+  <!-- Cream background fill -->
+  <ellipse cx="280" cy="130" rx="240" ry="110" fill="#F5F0E8"/>
+
+  <!-- Outer oval border -->
+  <ellipse cx="280" cy="130" rx="240" ry="110"
+           fill="none" stroke="#B8A070" stroke-width="1.6"/>
+  <!-- Inner oval border (double-line elegance) -->
+  <ellipse cx="280" cy="130" rx="232" ry="102"
+           fill="none" stroke="#B8A070" stroke-width="0.45"/>
+
+  <!-- Diamond accent at top cardinal point -->
+  <polygon points="280,14 287,21 280,28 273,21" fill="#B8A070"/>
+  <!-- Diamond accent at bottom cardinal point -->
+  <polygon points="280,232 287,239 280,246 273,239" fill="#B8A070"/>
+  <!-- Diamond accent at left cardinal point -->
+  <polygon points="33,130 40,123 47,130 40,137" fill="#B8A070"/>
+  <!-- Diamond accent at right cardinal point -->
+  <polygon points="513,130 520,123 527,130 520,137" fill="#B8A070"/>
+
+  <!-- Small decorative corner flourishes inside oval (top-left / top-right) -->
+  <line x1="96" y1="60"  x2="116" y2="60"  stroke="#B8A070" stroke-width="0.5"/>
+  <line x1="444" y1="60" x2="464" y2="60" stroke="#B8A070" stroke-width="0.5"/>
+  <line x1="96" y1="200" x2="116" y2="200" stroke="#B8A070" stroke-width="0.5"/>
+  <line x1="444" y1="200" x2="464" y2="200" stroke="#B8A070" stroke-width="0.5"/>
+
+  <!-- Tagline at top -->
+  <text x="280" y="72"
+        font-family="Georgia,'Times New Roman',serif"
+        font-size="9.5" fill="#B8A070" text-anchor="middle" letter-spacing="5">
+    ORIGINAL PAINTINGS
+  </text>
+
+  <!-- Rule below tagline -->
+  <line x1="160" y1="80" x2="400" y2="80" stroke="#B8A070" stroke-width="0.5"/>
+
+  <!-- Main brand name "Muse" — large italic serif -->
+  <text x="280" y="163"
+        font-family="Georgia,'Times New Roman',serif"
+        font-style="italic"
+        font-size="92"
+        fill="#1A1714"
+        text-anchor="middle"
+        letter-spacing="1">Muse</text>
+
+  <!-- Gold separator rule with diamond centre break -->
+  <line x1="100" y1="178" x2="268" y2="178" stroke="#B8A070" stroke-width="0.9"/>
+  <polygon points="280,173 286,178 280,183 274,178" fill="#C4572A"/>
+  <line x1="292" y1="178" x2="460" y2="178" stroke="#B8A070" stroke-width="0.9"/>
+
+  <!-- Artist name -->
+  <text x="280" y="202"
+        font-family="Georgia,'Times New Roman',serif"
+        font-size="13"
+        fill="#C4572A"
+        text-anchor="middle"
+        letter-spacing="9">BY ARSHIA</text>
+
+  <!-- Rule below artist name -->
+  <line x1="160" y1="212" x2="400" y2="212" stroke="#B8A070" stroke-width="0.5"/>
+
+</svg>

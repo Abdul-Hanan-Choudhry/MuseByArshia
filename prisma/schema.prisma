@@ -1,0 +1,166 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      Role     @default(ADMIN)
+  createdAt DateTime @default(now())
+
+  @@map("users")
+}
+
+enum Role {
+  ADMIN
+  SUPERADMIN
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String
+  slug        String    @unique
+  description String?
+  coverImage  String?
+  sortOrder   Int       @default(0)
+  isVisible   Boolean   @default(true)
+  products    Product[]
+  createdAt   DateTime  @default(now())
+
+  @@map("categories")
+}
+
+model Product {
+  id          String      @id @default(cuid())
+  title       String
+  slug        String      @unique
+  description String
+  price       Int
+  salePrice   Int?
+  images      String[]
+  size        String
+  medium      String
+  year        Int?
+  isSoldOut   Boolean     @default(false)
+  isVisible   Boolean     @default(true)
+  isFeatured  Boolean     @default(false)
+  sortOrder   Int         @default(0)
+  categoryId  String
+  category    Category    @relation(fields: [categoryId], references: [id])
+  orderItems  OrderItem[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@map("products")
+}
+
+model DiscountCode {
+  id           String       @id @default(cuid())
+  code         String       @unique
+  type         DiscountType
+  value        Int
+  minimumOrder Int?
+  maxUses      Int?
+  usedCount    Int          @default(0)
+  isActive     Boolean      @default(true)
+  expiresAt    DateTime?
+  orders       Order[]
+  createdAt    DateTime     @default(now())
+
+  @@map("discount_codes")
+}
+
+enum DiscountType {
+  PERCENTAGE
+  FIXED
+}
+
+model SaleBanner {
+  id        String    @id @default(cuid())
+  message   String
+  isActive  Boolean   @default(false)
+  startDate DateTime?
+  endDate   DateTime?
+  linkUrl   String?
+  linkText  String?
+  createdAt DateTime  @default(now())
+
+  @@map("sale_banners")
+}
+
+model Order {
+  id             String        @id @default(cuid())
+  orderNumber    String        @unique
+  customerName   String
+  customerEmail  String
+  customerPhone  String
+  address        String
+  city           String
+  postalCode     String?
+  subtotal       Int
+  discountAmount Int           @default(0)
+  shippingCost   Int           @default(0)
+  total          Int
+  paymentMethod  PaymentMethod
+  paymentStatus  PaymentStatus @default(PENDING)
+  status         OrderStatus   @default(PENDING)
+  notes          String?
+  trackingNumber String?
+  items          OrderItem[]
+  discountCode   DiscountCode? @relation(fields: [discountCodeId], references: [id])
+  discountCodeId String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  quantity  Int     @default(1)
+  price     Int
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id])
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+
+  @@map("order_items")
+}
+
+enum PaymentMethod {
+  COD
+  JAZZCASH
+  EASYPAISA
+  BANK_TRANSFER
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+model Subscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+
+  @@map("subscribers")
+}
