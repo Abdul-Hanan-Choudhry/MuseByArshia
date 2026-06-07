@@ -38,10 +38,10 @@ export function Navbar() {
       >
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
           <Link href="/" className="flex flex-col items-start leading-none group">
-            <span className="font-script text-4xl text-ink group-hover:text-rust transition-colors duration-300">
+            <span className="font-script text-5xl text-ink group-hover:text-rust transition-colors duration-300" style={{ lineHeight: 1.1 }}>
               Muse
             </span>
-            <span className="font-display text-[10px] tracking-[0.35em] uppercase text-ink/80 -mt-1 pl-0.5">
+            <span className="font-display text-[11px] tracking-[0.4em] uppercase text-ink -mt-0.5 pl-1">
               by Arshia
             </span>
           </Link>

@@ -60,6 +60,31 @@ export default function AboutPage() {
           </div>
         </div>
 
+        {/* Commission CTA */}
+        <div className="bg-ink text-cream px-10 py-14 mb-16 text-center relative overflow-hidden">
+          <div className="absolute inset-0 opacity-5" style={{ backgroundImage: "url('/images/Arshia.jpeg')", backgroundSize: 'cover', backgroundPosition: 'center' }} />
+          <div className="relative z-10">
+            <p className="font-sans text-xs tracking-[0.35em] uppercase text-gold mb-4">Commissions</p>
+            <h2 className="font-display text-4xl md:text-5xl font-light text-cream mb-6 leading-snug">
+              A painting made
+              <br />
+              <em className="font-accent italic text-dusty-rose">just for you.</em>
+            </h2>
+            <p className="font-sans font-light text-cream/70 text-base leading-relaxed max-w-xl mx-auto mb-8">
+              Looking for a commissioned piece or a custom painting created just for you?
+              Feel free to reach out through my Instagram — I&apos;d love to bring your idea to life.
+            </p>
+            <a
+              href="https://instagram.com/musebyarshia"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-3 border border-cream/50 text-cream font-sans text-sm tracking-widest px-10 py-3 hover:bg-cream hover:text-ink transition-all duration-300"
+            >
+              Message on Instagram
+            </a>
+          </div>
+        </div>
+
         <div className="border-t border-gold/30 pt-16">
           <h2 className="font-display text-4xl font-light text-ink mb-10 text-center">
             My Process
