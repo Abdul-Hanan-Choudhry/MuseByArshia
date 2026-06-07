@@ -13,6 +13,7 @@ const CITIES = [
 ]
 
 const PAYMENT_METHODS = [
+  { value: 'CARD', label: 'Credit / Debit Card', desc: 'Secure online payment via Safepay' },
   { value: 'COD', label: 'Cash on Delivery', desc: 'Pay when you receive' },
   { value: 'JAZZCASH', label: 'JazzCash', desc: 'Send to our number' },
   { value: 'EASYPAISA', label: 'EasyPaisa', desc: 'Send to our number' },
@@ -45,6 +46,31 @@ function CheckoutContent() {
     e.preventDefault()
     setLoading(true)
     setError('')
+
+    if (paymentMethod === 'CARD') {
+      const res = await fetch('/api/checkout/safepay', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          items: items.map((i) => ({ productId: i.product.id })),
+          customer: form,
+          discountCodeId: discountId,
+          discountAmount,
+        }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        setError(data.error ?? 'Failed to initialize payment. Please try again.')
+        setLoading(false)
+        return
+      }
+
+      clearCart()
+      window.location.href = data.checkoutUrl
+      return
+    }
 
     const res = await fetch('/api/checkout/cod', {
       method: 'POST',
@@ -211,7 +237,9 @@ function CheckoutContent() {
               )}
 
               <Button type="submit" disabled={loading} className="w-full mt-6">
-                {loading ? 'Placing Order...' : 'Place Order'}
+                {loading
+                  ? paymentMethod === 'CARD' ? 'Redirecting to payment...' : 'Placing Order...'
+                  : paymentMethod === 'CARD' ? 'Pay with Card' : 'Place Order'}
               </Button>
             </div>
           </div>

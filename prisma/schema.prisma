@@ -113,6 +113,7 @@ model Order {
   status         OrderStatus   @default(PENDING)
   notes          String?
   trackingNumber String?
+  safepayToken   String?
   items          OrderItem[]
   discountCode   DiscountCode? @relation(fields: [discountCodeId], references: [id])
   discountCodeId String?
@@ -139,6 +140,7 @@ enum PaymentMethod {
   JAZZCASH
   EASYPAISA
   BANK_TRANSFER
+  CARD
 }
 
 enum PaymentStatus {
