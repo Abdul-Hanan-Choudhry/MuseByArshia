@@ -35,11 +35,11 @@ export function VideoSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 1 }}
-          className="font-accent italic text-cream/80 text-2xl md:text-3xl mb-6"
+          className="font-accent italic text-cream/80 text-2xl md:text-3xl mb-6 max-w-2xl"
         >
-          &ldquo;Art is not what you see,
+          &ldquo;What started as an escape from medical textbooks
           <br />
-          but what you make others see.&rdquo;
+          became the place where I feel most at home.&rdquo;
         </motion.p>
         <motion.a
           initial={{ opacity: 0 }}

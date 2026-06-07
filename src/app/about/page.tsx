@@ -15,20 +15,33 @@ export default function AboutPage() {
               <br />
               <em className="font-accent italic">behind the art</em>
             </h1>
-            <p className="font-sans font-light text-ink/60 text-base leading-relaxed mb-6">
-              Art has always been more than a craft — it is a conversation between feeling and
-              form. Every canvas begins with an emotion, a colour seen in passing light, a
-              texture felt in a quiet moment.
+            <p className="font-sans font-light text-ink/60 text-base leading-relaxed mb-5">
+              Hi, I&apos;m Arshia — a medical student who fell in love with painting while looking
+              for a break from textbooks, lectures, and endless hours of studying.
             </p>
-            <p className="font-sans font-light text-ink/60 text-base leading-relaxed mb-6">
-              Born and raised with a deep love for colour and texture, my journey into painting
-              began as a way to process the world around me. What started as a hobby has grown
-              into a passion that shapes every waking moment.
+            <p className="font-sans font-light text-ink/60 text-base leading-relaxed mb-5">
+              What started as a simple escape quickly became something much more. Painting gave
+              me a space to slow down, express myself, and create something meaningful with my
+              own hands. Every canvas became a reflection of a moment, an emotion, or an idea
+              that words couldn&apos;t fully capture.
+            </p>
+            <p className="font-sans font-light text-ink/60 text-base leading-relaxed mb-5">
+              I&apos;ve never attended art school, and I didn&apos;t start painting because I wanted to be
+              perfect at it. I started because I genuinely enjoyed the process — the quiet hours
+              spent mixing colours, experimenting with new techniques, and watching an idea
+              slowly come to life.
+            </p>
+            <p className="font-sans font-light text-ink/60 text-base leading-relaxed mb-5">
+              Balancing medicine and art isn&apos;t always easy, but creating has become one of the
+              most rewarding parts of my journey. There&apos;s something special about knowing that a
+              piece I made in my room can one day become part of someone else&apos;s home and story.
             </p>
             <p className="font-sans font-light text-ink/60 text-base leading-relaxed mb-10">
-              Each painting is made with intention, care, and love. I hope they bring as much
-              joy to your home as they brought me in their creation.
+              Each painting is created with intention, patience, and care. My hope is that when
+              you bring one of my pieces home, you feel a little of the joy, comfort, and meaning
+              that went into making it. Thank you for being here and supporting my art.
             </p>
+            <p className="font-display text-xl font-light text-ink italic mb-10">— Shanzay Arshia</p>
             <Link
               href="/shop"
               className="inline-block bg-ink text-cream font-sans text-sm tracking-widest px-10 py-4 hover:bg-rust transition-colors duration-300"
@@ -39,8 +52,8 @@ export default function AboutPage() {
 
           <div className="relative aspect-[4/5] overflow-hidden">
             <Image
-              src="/images/About.jpg"
-              alt="The artist at work"
+              src="/images/Arshia.jpeg"
+              alt="Arshia — the artist"
               fill
               className="object-cover"
             />
@@ -55,18 +68,18 @@ export default function AboutPage() {
             {[
               {
                 step: '01',
-                title: 'Inspiration',
-                desc: 'Every piece begins with a feeling or a memory — a colour encountered in an unexpected place, a moment of stillness, or a dream.',
+                title: 'Between Medicine & Art',
+                desc: 'Most of my days are spent in medicine, but painting is where my mind slows down. Ideas come from emotions I can\'t fully explain — quiet moments, memories, and the comfort I find in colours.',
               },
               {
                 step: '02',
-                title: 'Creation',
-                desc: 'I work primarily with oils and acrylics on canvas. Each layer is applied slowly, allowing the composition to breathe and evolve naturally.',
+                title: 'Creating the Piece',
+                desc: 'I paint slowly and intuitively, layering acrylics until the canvas feels alive. Imperfections stay because they make the piece feel human — every artwork carries my mood from the moment it was made.',
               },
               {
                 step: '03',
-                title: 'Completion',
-                desc: 'A painting is finished when it speaks for itself — when there is nothing left to add and nothing left to take away.',
+                title: 'What Matters Most',
+                desc: 'Art was never about perfection for me — it\'s about making people feel something. Knowing a painting made between stressful study days can bring comfort to someone else\'s room is the most rewarding part of all.',
               },
             ].map((item) => (
               <div key={item.step} className="text-center">

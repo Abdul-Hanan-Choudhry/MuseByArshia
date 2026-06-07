@@ -25,13 +25,15 @@ export function ArtistStory() {
             <em className="font-accent italic text-dusty-rose">through paint.</em>
           </h2>
           <p className="font-sans font-light text-ink/60 text-base leading-relaxed mb-6">
-            Art has always been more than a craft — it is a dialogue between feeling and form.
-            Every canvas begins with an emotion, a colour seen in passing light, a texture felt
-            in a quiet moment. That raw beginning is what drives each brushstroke forward.
+            Medicine taught me how the body works. Art taught me how feelings look. As a medical
+            student, I found painting not as an escape from studying, but as the other half of
+            understanding what it means to be human. In anatomy I learned what lies beneath the
+            skin — in painting, I discovered what lies beneath expression.
           </p>
           <p className="font-sans font-light text-ink/60 text-base leading-relaxed mb-10">
-            Every brushstroke carries intention. Every painting tells a story that began long
-            before the canvas was touched.
+            Every canvas becomes a conversation between science and emotion, between precision
+            and intuition. Each brushstroke carries something that words — and textbooks — could
+            never fully hold.
           </p>
           <a
             href="/about"

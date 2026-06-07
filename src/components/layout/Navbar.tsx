@@ -41,7 +41,7 @@ export function Navbar() {
             <span className="font-script text-4xl text-ink group-hover:text-rust transition-colors duration-300">
               Muse
             </span>
-            <span className="font-display text-[10px] tracking-[0.35em] uppercase text-ink/50 -mt-1 pl-0.5">
+            <span className="font-display text-[10px] tracking-[0.35em] uppercase text-ink/80 -mt-1 pl-0.5">
               by Arshia
             </span>
           </Link>
