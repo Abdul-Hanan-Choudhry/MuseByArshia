@@ -75,7 +75,7 @@ export default function AboutPage() {
               Feel free to reach out through my Instagram — I&apos;d love to bring your idea to life.
             </p>
             <a
-              href="https://instagram.com/musebyarshia"
+              href="https://www.instagram.com/arshiasdiary_?igsh=c2VxeGdvbTV1bWZm"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-3 border border-cream/50 text-cream font-sans text-sm tracking-widest px-10 py-3 hover:bg-cream hover:text-ink transition-all duration-300"
