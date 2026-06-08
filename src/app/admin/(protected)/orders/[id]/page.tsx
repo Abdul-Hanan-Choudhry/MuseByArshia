@@ -16,8 +16,10 @@ export default function AdminOrderDetailPage() {
   const [status, setStatus] = useState('')
   const [paymentStatus, setPaymentStatus] = useState('')
   const [trackingNumber, setTrackingNumber] = useState('')
+  const [courierName, setCourierName] = useState('')
   const [notes, setNotes] = useState('')
   const [saving, setSaving] = useState(false)
+  const [saveMsg, setSaveMsg] = useState('')
 
   useEffect(() => {
     fetch(`/api/orders/${id}`)
@@ -27,18 +29,22 @@ export default function AdminOrderDetailPage() {
         setStatus(data.status)
         setPaymentStatus(data.paymentStatus)
         setTrackingNumber(data.trackingNumber ?? '')
+        setCourierName(data.courierName ?? '')
         setNotes(data.notes ?? '')
       })
   }, [id])
 
   const handleSave = async () => {
     setSaving(true)
+    setSaveMsg('')
     await fetch(`/api/orders/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status, paymentStatus, trackingNumber, notes }),
+      body: JSON.stringify({ status, paymentStatus, trackingNumber, courierName, notes }),
     })
     setSaving(false)
+    setSaveMsg('Saved')
+    setTimeout(() => setSaveMsg(''), 3000)
   }
 
   if (!order) return <div className="text-sm text-gray-500">Loading...</div>
@@ -138,8 +144,17 @@ export default function AdminOrderDetailPage() {
               <div>
                 <label className="block text-xs text-gray-500 mb-1">Tracking Number</label>
                 <input value={trackingNumber} onChange={(e) => setTrackingNumber(e.target.value)}
-                  placeholder="Enter tracking #"
+                  placeholder="e.g. TCS-123456789"
                   className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none" />
+              </div>
+              <div>
+                <label className="block text-xs text-gray-500 mb-1">Courier Service</label>
+                <input value={courierName} onChange={(e) => setCourierName(e.target.value)}
+                  placeholder="e.g. TCS, Leopards, Trax"
+                  className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none" />
+                {status === 'SHIPPED' && (
+                  <p className="text-xs text-amber-600 mt-1">A shipping email will be sent to the customer when saved with status SHIPPED.</p>
+                )}
               </div>
               <div>
                 <label className="block text-xs text-gray-500 mb-1">Admin Notes</label>
@@ -150,6 +165,7 @@ export default function AdminOrderDetailPage() {
                 className="w-full bg-ink text-cream text-sm py-2.5 hover:bg-rust transition-colors disabled:opacity-60">
                 {saving ? 'Saving...' : 'Save Changes'}
               </button>
+              {saveMsg && <p className="text-xs text-green-600 text-center">{saveMsg}</p>}
             </div>
           </div>
         </div>
