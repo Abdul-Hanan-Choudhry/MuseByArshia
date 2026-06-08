@@ -189,14 +189,19 @@ export async function sendOrderConfirmationEmail(order: OrderForEmail) {
     </p>
   `
 
-  await resend.emails.send({
-    from: 'Muse By Arshia <onboarding@resend.dev>',
-    to: order.customerEmail,
-    subject: `Order Confirmed — ${order.orderNumber} | Muse By Arshia`,
-    html: emailShell(body),
-  })
+  // Customer confirmation — may fail on Resend free tier if no domain is verified
+  try {
+    await resend.emails.send({
+      from: 'Muse By Arshia <onboarding@resend.dev>',
+      to: order.customerEmail,
+      subject: `Order Confirmed — ${order.orderNumber} | Muse By Arshia`,
+      html: emailShell(body),
+    })
+  } catch (err) {
+    console.error('[email] customer confirmation failed (domain not verified?):', err)
+  }
 
-  // Admin notification
+  // Admin notification — always runs regardless of customer email result
   const adminBody = `
     <p style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#9B7B5A;">New Order</p>
     <h2 style="margin:0 0 28px;font-family:Georgia,serif;font-size:24px;font-weight:normal;color:#1A1714;">${esc(order.orderNumber)}</h2>
@@ -216,6 +221,8 @@ export async function sendOrderConfirmationEmail(order: OrderForEmail) {
     html: emailShell(adminBody),
   })
 }
+
+
 
 // ─── Shipping Notification ────────────────────────────────────────────────────
 
@@ -272,11 +279,35 @@ export async function sendShippingEmail(data: ShippingEmailData) {
     </p>
   `
 
+  // Customer shipping notification
+  try {
+    await resend.emails.send({
+      from: 'Muse By Arshia <onboarding@resend.dev>',
+      to: data.customerEmail,
+      subject: `Your order has shipped — ${data.orderNumber} | Muse By Arshia`,
+      html: emailShell(body),
+    })
+  } catch (err) {
+    console.error('[email] shipping notification to customer failed:', err)
+  }
+
+  // Admin copy so you always know it fired
+  const adminShipBody = `
+    <p style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#9B7B5A;">Shipping Email Sent</p>
+    <h2 style="margin:0 0 24px;font-family:Georgia,serif;font-size:22px;font-weight:normal;color:#1A1714;">${esc(data.orderNumber)}</h2>
+    <table cellpadding="0" cellspacing="0" style="font-family:Arial,sans-serif;font-size:13px;color:#4A4540;width:100%;">
+      <tr><td style="padding:5px 0;color:#9B7B5A;width:130px;">Customer</td><td style="padding:5px 0;"><strong style="color:#1A1714;">${esc(data.customerName)}</strong></td></tr>
+      <tr><td style="padding:5px 0;color:#9B7B5A;">Email</td><td style="padding:5px 0;">${esc(data.customerEmail)}</td></tr>
+      <tr><td style="padding:5px 0;color:#9B7B5A;">Tracking</td><td style="padding:5px 0;font-weight:bold;color:#1A1714;">${esc(data.trackingNumber)}</td></tr>
+      <tr><td style="padding:5px 0;color:#9B7B5A;">Courier</td><td style="padding:5px 0;">${esc(data.courierName)}</td></tr>
+    </table>
+  `
+
   await resend.emails.send({
     from: 'Muse By Arshia <onboarding@resend.dev>',
-    to: data.customerEmail,
-    subject: `Your order has shipped — ${data.orderNumber} | Muse By Arshia`,
-    html: emailShell(body),
+    to: process.env.ADMIN_EMAIL!,
+    subject: `Shipped: ${data.orderNumber} via ${data.courierName}`,
+    html: emailShell(adminShipBody),
   })
 }
 
