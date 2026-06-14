@@ -35,10 +35,48 @@ const greatVibes = Great_Vibes({
   display: 'swap',
 })
 
+const BASE_URL = (process.env.NEXTAUTH_URL ?? 'https://musebyarshia.vercel.app').replace(/\/$/, '')
+
 export const metadata: Metadata = {
-  title: 'Muse By Arshia — Original Paintings',
+  metadataBase: new URL(BASE_URL),
+  title: {
+    default: 'Muse By Arshia — Original Paintings',
+    template: '%s | Muse By Arshia',
+  },
   description:
-    'Handcrafted original paintings by Arshia, shipped across Pakistan. One-of-a-kind art for your home.',
+    'Handcrafted original paintings by Shanzay Arshia, shipped across Pakistan. One-of-a-kind art for your home.',
+  keywords: [
+    'original paintings Pakistan',
+    'buy original art online Pakistan',
+    'handmade paintings',
+    'acrylic paintings',
+    'Pakistani artist',
+    'original artwork',
+    'Muse By Arshia',
+    'Shanzay Arshia',
+  ],
+  authors: [{ name: 'Shanzay Arshia' }],
+  creator: 'Shanzay Arshia',
+  openGraph: {
+    type: 'website',
+    locale: 'en_PK',
+    url: BASE_URL,
+    siteName: 'Muse By Arshia',
+    title: 'Muse By Arshia — Original Paintings',
+    description: 'Handcrafted original paintings by Shanzay Arshia, shipped across Pakistan.',
+    images: [{ url: '/images/About.jpeg', width: 1200, height: 630, alt: 'Muse By Arshia — Original Paintings' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Muse By Arshia — Original Paintings',
+    description: 'Handcrafted original paintings by Shanzay Arshia, shipped across Pakistan.',
+    images: ['/images/About.jpeg'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1 },
+  },
 }
 
 async function getBanner(): Promise<SaleBannerType | null> {

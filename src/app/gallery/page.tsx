@@ -1,4 +1,17 @@
+import type { Metadata } from 'next'
 import type { Product } from '@/types'
+
+export const metadata: Metadata = {
+  title: 'Gallery',
+  description:
+    'Explore the full collection of original paintings by Muse By Arshia — portraits, abstracts, landscapes, and more.',
+  openGraph: {
+    title: 'Gallery | Muse By Arshia',
+    description:
+      'Explore the full collection of original paintings by Muse By Arshia.',
+  },
+}
+
 import { GalleryGrid } from '@/components/gallery/GalleryGrid'
 
 async function getAllPaintings(): Promise<Product[]> {

@@ -1,5 +1,18 @@
+import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
+
+export const metadata: Metadata = {
+  title: 'About Arshia',
+  description:
+    'Shanzay Arshia is a medical student and self-taught painter creating original handcrafted art shipped across Pakistan.',
+  openGraph: {
+    title: 'About Arshia | Muse By Arshia',
+    description:
+      'Shanzay Arshia is a medical student and self-taught painter creating original handcrafted art shipped across Pakistan.',
+    images: [{ url: '/images/About.jpeg', width: 1200, height: 630, alt: 'Shanzay Arshia — the artist behind Muse By Arshia' }],
+  },
+}
 
 export default function AboutPage() {
   return (
@@ -52,7 +65,7 @@ export default function AboutPage() {
 
           <div className="relative aspect-[4/5] overflow-hidden">
             <Image
-              src="/images/Arshia.jpeg"
+              src="/images/About.jpeg"
               alt="Arshia — the artist"
               fill
               className="object-cover"

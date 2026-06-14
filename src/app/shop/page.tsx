@@ -1,4 +1,17 @@
+import type { Metadata } from 'next'
 import { Suspense } from 'react'
+
+export const metadata: Metadata = {
+  title: 'Shop Original Paintings',
+  description:
+    'Browse and buy original handcrafted paintings by Shanzay Arshia. Acrylics, portraits, abstracts, and more — shipped across Pakistan.',
+  openGraph: {
+    title: 'Shop Original Paintings | Muse By Arshia',
+    description:
+      'Browse and buy original handcrafted paintings by Shanzay Arshia. Shipped across Pakistan.',
+  },
+}
+
 import { CategoryPills } from '@/components/shop/CategoryPills'
 import { SortDropdown } from '@/components/shop/SortDropdown'
 import { ProductCard } from '@/components/shop/ProductCard'

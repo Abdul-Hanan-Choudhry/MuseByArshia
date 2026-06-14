@@ -32,11 +32,26 @@ async function getFeaturedProducts(): Promise<Product[]> {
   }
 }
 
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'Muse By Arshia',
+  description:
+    'Original handcrafted paintings by Shanzay Arshia, shipped across Pakistan.',
+  url: process.env.NEXTAUTH_URL,
+  sameAs: ['https://www.instagram.com/arshiasdiary_'],
+  founder: { '@type': 'Person', name: 'Shanzay Arshia' },
+}
+
 export default async function HomePage() {
   const [, featuredProducts] = await Promise.all([getBanner(), getFeaturedProducts()])
 
   return (
     <main>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <HeroSection />
       <MarqueeText />
       <ArtistStory />

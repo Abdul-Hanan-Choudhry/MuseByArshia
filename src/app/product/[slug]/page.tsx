@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { ImageGallery } from '@/components/product/ImageGallery'
 import { ProductInfo } from '@/components/product/ProductInfo'
@@ -34,14 +35,62 @@ async function getRelated(categorySlug: string, currentId: string): Promise<Prod
   }
 }
 
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const product = await getProduct(params.slug)
+  if (!product) return {}
+
+  const desc = product.description.slice(0, 160)
+  const image = product.images[0]
+
+  return {
+    title: product.title,
+    description: desc,
+    openGraph: {
+      title: `${product.title} — Original Painting`,
+      description: desc,
+      type: 'website',
+      images: image ? [{ url: image, width: 800, height: 1000, alt: product.title }] : [],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: product.title,
+      description: desc,
+      images: image ? [image] : [],
+    },
+  }
+}
+
 export default async function ProductPage({ params }: PageProps) {
   const product = await getProduct(params.slug)
   if (!product) notFound()
 
   const related = await getRelated(product.category.slug, product.id)
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: product.title,
+    description: product.description,
+    image: product.images,
+    brand: { '@type': 'Brand', name: 'Muse By Arshia' },
+    creator: { '@type': 'Person', name: 'Shanzay Arshia' },
+    offers: {
+      '@type': 'Offer',
+      priceCurrency: 'PKR',
+      price: product.salePrice ?? product.price,
+      availability: product.isSoldOut
+        ? 'https://schema.org/SoldOut'
+        : 'https://schema.org/InStock',
+      seller: { '@type': 'Organization', name: 'Muse By Arshia' },
+    },
+  }
+
   return (
     <div className="min-h-screen bg-shop-bg pt-8 pb-20">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div className="max-w-6xl mx-auto px-6">
         <nav className="font-sans text-xs text-shop-muted mb-8" aria-label="Breadcrumb">
           <a href="/shop" className="hover:text-ink">Shop</a>
