@@ -1,7 +1,8 @@
 import type { MetadataRoute } from 'next'
 
 export default function robots(): MetadataRoute.Robots {
-  const base = (process.env.NEXTAUTH_URL ?? 'https://musebyarshia.vercel.app').replace(/\/$/, '')
+  const raw = process.env.NEXTAUTH_URL ?? 'https://musebyarshia.vercel.app'
+  const base = (raw.startsWith('http') ? raw : `https://${raw}`).replace(/\/$/, '')
   return {
     rules: [
       {

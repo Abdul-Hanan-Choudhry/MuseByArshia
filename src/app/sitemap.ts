@@ -2,7 +2,8 @@ import type { MetadataRoute } from 'next'
 import { prisma } from '@/lib/prisma'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const base = (process.env.NEXTAUTH_URL ?? 'https://musebyarshia.vercel.app').replace(/\/$/, '')
+  const raw = process.env.NEXTAUTH_URL ?? 'https://musebyarshia.vercel.app'
+  const base = (raw.startsWith('http') ? raw : `https://${raw}`).replace(/\/$/, '')
 
   const products = await prisma.product.findMany({
     where: { isVisible: true },

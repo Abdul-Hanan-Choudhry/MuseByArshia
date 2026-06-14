@@ -35,7 +35,12 @@ const greatVibes = Great_Vibes({
   display: 'swap',
 })
 
-const BASE_URL = (process.env.NEXTAUTH_URL ?? 'https://musebyarshia.vercel.app').replace(/\/$/, '')
+function buildBaseUrl() {
+  const raw = process.env.NEXTAUTH_URL ?? 'https://musebyarshia.vercel.app'
+  const withProto = raw.startsWith('http') ? raw : `https://${raw}`
+  return withProto.replace(/\/$/, '')
+}
+const BASE_URL = buildBaseUrl()
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
