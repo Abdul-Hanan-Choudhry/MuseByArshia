@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { HeroSection } from '@/components/homepage/HeroSection'
 import { MarqueeText } from '@/components/homepage/MarqueeText'
 import { ArtistStory } from '@/components/homepage/ArtistStory'
@@ -5,24 +7,8 @@ import { FeaturedWorks } from '@/components/homepage/FeaturedWorks'
 import { VideoSection } from '@/components/homepage/VideoSection'
 import { CatalogPreview } from '@/components/homepage/CatalogPreview'
 import { NewsletterSection } from '@/components/homepage/NewsletterSection'
-import type { Product, SaleBanner } from '@/types'
+import type { Product } from '@/types'
 import { prisma } from '@/lib/prisma'
-
-async function getBanner(): Promise<SaleBanner | null> {
-  try {
-    const now = new Date()
-    const banner = await prisma.saleBanner.findFirst({
-      where: {
-        isActive: true,
-        OR: [{ startDate: null }, { startDate: { lte: now } }],
-        AND: [{ OR: [{ endDate: null }, { endDate: { gte: now } }] }],
-      },
-    })
-    return banner as unknown as SaleBanner | null
-  } catch {
-    return null
-  }
-}
 
 async function getFeaturedProducts(): Promise<Product[]> {
   try {
@@ -50,7 +36,7 @@ const jsonLd = {
 }
 
 export default async function HomePage() {
-  const [, featuredProducts] = await Promise.all([getBanner(), getFeaturedProducts()])
+  const featuredProducts = await getFeaturedProducts()
 
   return (
     <main>

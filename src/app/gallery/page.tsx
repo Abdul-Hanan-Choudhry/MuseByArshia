@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import type { Product } from '@/types'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'Gallery',
   description:

@@ -45,6 +45,8 @@ function buildBaseUrl() {
 }
 const BASE_URL = buildBaseUrl()
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
   title: {

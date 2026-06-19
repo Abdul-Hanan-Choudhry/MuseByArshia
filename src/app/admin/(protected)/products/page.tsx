@@ -156,7 +156,11 @@ export default function AdminProductsPage() {
 
   const handleDelete = async (id: string) => {
     if (!confirm('Delete this painting? This cannot be undone.')) return
-    await fetch(`/api/products/${id}`, { method: 'DELETE' })
+    const res = await fetch(`/api/products/${id}`, { method: 'DELETE' })
+    if (!res.ok) {
+      alert(`Failed to delete painting (${res.status}). Please try again.`)
+      return
+    }
     loadProducts()
   }
 
