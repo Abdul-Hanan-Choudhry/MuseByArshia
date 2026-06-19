@@ -114,8 +114,8 @@ export default function AdminBannersPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl font-semibold text-gray-900">Sale Banners</h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-xl md:text-2xl font-semibold text-gray-900">Sale Banners</h1>
         <button
           onClick={openNew}
           className="flex items-center gap-2 bg-ink text-cream font-sans text-sm px-4 py-2 hover:bg-rust transition-colors"
@@ -144,7 +144,7 @@ export default function AdminBannersPage() {
                   </p>
                 )}
               </div>
-              <div className="flex items-center gap-3 flex-shrink-0">
+              <div className="flex flex-wrap items-center gap-2 flex-shrink-0">
                 <button
                   onClick={() => handleToggle(banner)}
                   className={`text-xs font-medium px-3 py-1.5 rounded-full transition-colors ${

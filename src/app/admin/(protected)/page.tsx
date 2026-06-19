@@ -39,40 +39,63 @@ export default async function AdminDashboard() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl font-semibold text-gray-900">Dashboard</h1>
-        <div className="flex gap-3">
-          <Link
-            href="/admin/products"
-            className="bg-ink text-cream font-sans text-sm px-4 py-2 hover:bg-rust transition-colors"
-          >
-            + Add Painting
-          </Link>
-        </div>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-xl md:text-2xl font-semibold text-gray-900">Dashboard</h1>
+        <Link
+          href="/admin/products"
+          className="bg-ink text-cream font-sans text-sm px-4 py-2 hover:bg-rust transition-colors"
+        >
+          + Add Painting
+        </Link>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6">
         {[
           { label: 'Orders this month', value: stats.totalOrders },
           { label: 'Revenue (PKR)', value: `Rs. ${stats.revenue.toLocaleString()}` },
-          { label: 'Active listings', value: `${stats.soldProducts} sold / ${stats.totalProducts}` },
-          { label: 'Active promo codes', value: stats.activeDiscounts },
+          { label: 'Listings', value: `${stats.soldProducts} sold / ${stats.totalProducts}` },
+          { label: 'Promo codes', value: stats.activeDiscounts },
         ].map((stat) => (
-          <div key={stat.label} className="bg-white border border-gray-200 p-5 rounded-lg">
+          <div key={stat.label} className="bg-white border border-gray-200 p-4 md:p-5 rounded-lg">
             <p className="text-xs text-gray-500 mb-1">{stat.label}</p>
-            <p className="text-xl font-semibold text-gray-900">{stat.value}</p>
+            <p className="text-lg md:text-xl font-semibold text-gray-900">{stat.value}</p>
           </div>
         ))}
       </div>
 
       <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+        <div className="px-4 md:px-6 py-4 border-b border-gray-200 flex justify-between items-center">
           <h2 className="font-semibold text-gray-900">Recent Orders</h2>
           <Link href="/admin/orders" className="text-sm text-rust hover:underline">
             View all
           </Link>
         </div>
-        <div className="overflow-x-auto">
+
+        {/* Mobile card list */}
+        <div className="md:hidden divide-y divide-gray-100">
+          {stats.recentOrders.map((order) => (
+            <Link
+              key={order.id}
+              href={`/admin/orders/${order.id}`}
+              className="block px-4 py-3 hover:bg-gray-50 active:bg-gray-50"
+            >
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-sm font-semibold text-rust">{order.orderNumber}</span>
+                <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${STATUS_COLORS[order.status] ?? ''}`}>
+                  {order.status}
+                </span>
+              </div>
+              <p className="text-sm text-gray-900">{order.customerName}</p>
+              <div className="flex justify-between mt-1">
+                <span className="text-xs text-gray-500">{order.city}</span>
+                <span className="text-sm font-medium text-gray-900">Rs. {order.total.toLocaleString()}</span>
+              </div>
+            </Link>
+          ))}
+        </div>
+
+        {/* Desktop table */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="bg-gray-50 border-b border-gray-200">

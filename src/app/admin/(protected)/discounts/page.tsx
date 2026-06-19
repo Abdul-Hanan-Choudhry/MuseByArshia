@@ -91,8 +91,8 @@ export default function AdminDiscountsPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl font-semibold text-gray-900">Discount Codes</h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-xl md:text-2xl font-semibold text-gray-900">Discount Codes</h1>
         <button
           onClick={() => { setForm(emptyForm); setEditId(null); setShowForm(true) }}
           className="flex items-center gap-2 bg-ink text-cream font-sans text-sm px-4 py-2 hover:bg-rust transition-colors"
@@ -102,7 +102,8 @@ export default function AdminDiscountsPage() {
       </div>
 
       <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-        <table className="w-full">
+        <div className="overflow-x-auto">
+        <table className="w-full min-w-[600px]">
           <thead>
             <tr className="bg-gray-50 border-b border-gray-200">
               {['Code', 'Type', 'Value', 'Min Order', 'Uses', 'Expires', 'Active', 'Actions'].map((h) => (
@@ -148,6 +149,7 @@ export default function AdminDiscountsPage() {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
 
       {showForm && (

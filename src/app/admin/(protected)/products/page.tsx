@@ -175,85 +175,127 @@ export default function AdminProductsPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl font-semibold text-gray-900">Products</h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-xl md:text-2xl font-semibold text-gray-900">Products</h1>
         <button
           onClick={openNew}
           className="flex items-center gap-2 bg-ink text-cream font-sans text-sm px-4 py-2 hover:bg-rust transition-colors"
         >
-          <Plus size={16} /> Add Painting
+          <Plus size={16} /> <span className="hidden sm:inline">Add Painting</span><span className="sm:hidden">Add</span>
         </button>
       </div>
 
-      <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-        <table className="w-full">
-          <thead>
-            <tr className="bg-gray-50 border-b border-gray-200">
-              {['Image', 'Title', 'Category', 'Price', 'Sale Price', 'Status', 'Featured', 'Actions'].map(
-                (h) => (
-                  <th
-                    key={h}
-                    className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-4 py-3"
-                  >
-                    {h}
-                  </th>
-                )
+      {/* Mobile card list */}
+      <div className="md:hidden space-y-3">
+        {products.map((product) => (
+          <div key={product.id} className="bg-white border border-gray-200 rounded-lg p-4 flex gap-3">
+            <div className="relative w-14 h-16 bg-gray-100 flex-shrink-0 overflow-hidden rounded">
+              {product.images[0] && (
+                <Image src={product.images[0]} alt="" fill className="object-cover" />
               )}
-            </tr>
-          </thead>
-          <tbody>
-            {products.map((product) => (
-              <tr key={product.id} className="border-b border-gray-100 hover:bg-gray-50">
-                <td className="px-4 py-3">
-                  <div className="relative w-12 h-14 bg-gray-100 overflow-hidden flex-shrink-0">
-                    {product.images[0] && (
-                      <Image src={product.images[0]} alt="" fill className="object-cover" />
-                    )}
-                  </div>
-                </td>
-                <td className="px-4 py-3">
-                  <p className="text-sm font-medium text-gray-900 max-w-[200px] truncate">{product.title}</p>
-                  <p className="text-xs text-gray-500">{product.size}</p>
-                </td>
-                <td className="px-4 py-3 text-sm text-gray-600">{product.category.name}</td>
-                <td className="px-4 py-3 text-sm text-gray-900">Rs. {product.price.toLocaleString()}</td>
-                <td className="px-4 py-3 text-sm text-sale-red">
-                  {product.salePrice ? `Rs. ${product.salePrice.toLocaleString()}` : '—'}
-                </td>
-                <td className="px-4 py-3">
-                  <button
-                    onClick={() => handleToggleSold(product)}
-                    className={`text-xs px-2 py-1 rounded-full font-medium ${
-                      product.isSoldOut
-                        ? 'bg-red-100 text-red-700'
-                        : 'bg-green-100 text-green-700'
-                    }`}
-                  >
-                    {product.isSoldOut ? 'Sold' : 'Available'}
-                  </button>
-                </td>
-                <td className="px-4 py-3 text-sm text-gray-600">
-                  {product.isFeatured ? '★' : '—'}
-                </td>
-                <td className="px-4 py-3">
-                  <div className="flex gap-2">
-                    <button onClick={() => openEdit(product)} className="text-gray-400 hover:text-ink">
-                      <Pencil size={16} />
-                    </button>
-                    <button onClick={() => handleDelete(product.id)} className="text-gray-400 hover:text-red-500">
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
-                </td>
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-start gap-1">
+                <p className="text-sm font-medium text-gray-900 truncate flex-1">{product.title}</p>
+                {product.isFeatured && <span className="text-yellow-500 text-sm flex-shrink-0">★</span>}
+              </div>
+              <p className="text-xs text-gray-500 truncate">{product.category.name} · {product.size}</p>
+              <div className="flex items-center gap-2 mt-2 flex-wrap">
+                <span className="text-sm font-medium text-gray-900">Rs. {product.price.toLocaleString()}</span>
+                <button
+                  onClick={() => handleToggleSold(product)}
+                  className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                    product.isSoldOut ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'
+                  }`}
+                >
+                  {product.isSoldOut ? 'Sold' : 'Available'}
+                </button>
+              </div>
+            </div>
+            <div className="flex flex-col gap-3 justify-center flex-shrink-0">
+              <button onClick={() => openEdit(product)} className="text-gray-400 hover:text-ink p-1">
+                <Pencil size={16} />
+              </button>
+              <button onClick={() => handleDelete(product.id)} className="text-gray-400 hover:text-red-500 p-1">
+                <Trash2 size={16} />
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Desktop table */}
+      <div className="hidden md:block bg-white border border-gray-200 rounded-lg overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="bg-gray-50 border-b border-gray-200">
+                {['Image', 'Title', 'Category', 'Price', 'Sale Price', 'Status', 'Featured', 'Actions'].map(
+                  (h) => (
+                    <th
+                      key={h}
+                      className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-4 py-3"
+                    >
+                      {h}
+                    </th>
+                  )
+                )}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {products.map((product) => (
+                <tr key={product.id} className="border-b border-gray-100 hover:bg-gray-50">
+                  <td className="px-4 py-3">
+                    <div className="relative w-12 h-14 bg-gray-100 overflow-hidden flex-shrink-0">
+                      {product.images[0] && (
+                        <Image src={product.images[0]} alt="" fill className="object-cover" />
+                      )}
+                    </div>
+                  </td>
+                  <td className="px-4 py-3">
+                    <p className="text-sm font-medium text-gray-900 max-w-[200px] truncate">{product.title}</p>
+                    <p className="text-xs text-gray-500">{product.size}</p>
+                  </td>
+                  <td className="px-4 py-3 text-sm text-gray-600">{product.category.name}</td>
+                  <td className="px-4 py-3 text-sm text-gray-900">Rs. {product.price.toLocaleString()}</td>
+                  <td className="px-4 py-3 text-sm text-sale-red">
+                    {product.salePrice ? `Rs. ${product.salePrice.toLocaleString()}` : '—'}
+                  </td>
+                  <td className="px-4 py-3">
+                    <button
+                      onClick={() => handleToggleSold(product)}
+                      className={`text-xs px-2 py-1 rounded-full font-medium ${
+                        product.isSoldOut
+                          ? 'bg-red-100 text-red-700'
+                          : 'bg-green-100 text-green-700'
+                      }`}
+                    >
+                      {product.isSoldOut ? 'Sold' : 'Available'}
+                    </button>
+                  </td>
+                  <td className="px-4 py-3 text-sm text-gray-600">
+                    {product.isFeatured ? '★' : '—'}
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex gap-2">
+                      <button onClick={() => openEdit(product)} className="text-gray-400 hover:text-ink">
+                        <Pencil size={16} />
+                      </button>
+                      <button onClick={() => handleDelete(product.id)} className="text-gray-400 hover:text-red-500">
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {showForm && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-start justify-center overflow-y-auto py-8 px-4">
-          <div className="bg-white rounded-lg w-full max-w-2xl p-6 my-auto">
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-start justify-center overflow-y-auto py-4 px-4">
+          <div className="bg-white rounded-lg w-full max-w-2xl p-5 md:p-6 my-auto">
             <div className="flex items-center justify-between mb-6">
               <h2 className="font-semibold text-gray-900">
                 {editId ? 'Edit Painting' : 'Add New Painting'}
@@ -264,18 +306,18 @@ export default function AdminProductsPage() {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="col-span-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="sm:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-1">Title *</label>
                   <input name="title" value={form.title} onChange={handleChange} required
                     className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:border-ink" />
                 </div>
-                <div className="col-span-2">
+                <div className="sm:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-1">Slug</label>
                   <input name="slug" value={form.slug} onChange={handleChange}
                     className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:border-ink bg-gray-50" />
                 </div>
-                <div className="col-span-2">
+                <div className="sm:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-1">Description *</label>
                   <textarea name="description" value={form.description} onChange={handleChange} required rows={3}
                     className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:border-ink" />
@@ -317,7 +359,7 @@ export default function AdminProductsPage() {
                 </div>
               </div>
 
-              <div className="flex gap-4">
+              <div className="flex flex-wrap gap-4">
                 {[
                   { name: 'isFeatured', label: 'Featured on homepage' },
                   { name: 'isVisible', label: 'Visible in shop' },

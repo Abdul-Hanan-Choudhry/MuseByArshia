@@ -60,7 +60,7 @@ export default function AdminOrderDetailPage() {
 
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-semibold text-gray-900">{order.orderNumber}</h1>
+          <h1 className="text-xl md:text-2xl font-semibold text-gray-900">{order.orderNumber}</h1>
           <p className="text-sm text-gray-500">{new Date(order.createdAt).toLocaleString('en-PK')}</p>
         </div>
       </div>
@@ -69,7 +69,7 @@ export default function AdminOrderDetailPage() {
         <div className="md:col-span-2 space-y-6">
           <div className="bg-white border border-gray-200 rounded-lg p-6">
             <h2 className="font-semibold text-gray-900 mb-4">Customer</h2>
-            <dl className="grid grid-cols-2 gap-3 text-sm">
+            <dl className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
               {[
                 ['Name', order.customerName],
                 ['Phone', order.customerPhone],
