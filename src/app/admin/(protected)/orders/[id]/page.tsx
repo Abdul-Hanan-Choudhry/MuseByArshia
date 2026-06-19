@@ -77,12 +77,19 @@ export default function AdminOrderDetailPage() {
                 ['City', order.city],
                 ['Address', order.address],
                 ['Postal Code', order.postalCode ?? '—'],
+                ['Payment', order.paymentMethod],
               ].map(([label, value]) => (
                 <div key={label}>
                   <dt className="text-xs text-gray-500 mb-0.5">{label}</dt>
                   <dd className="text-gray-900">{value}</dd>
                 </div>
               ))}
+              {order.paymentReference && (
+                <div className="col-span-2">
+                  <dt className="text-xs text-gray-500 mb-0.5">Transaction Reference</dt>
+                  <dd className="text-gray-900 font-mono font-semibold">{order.paymentReference}</dd>
+                </div>
+              )}
             </dl>
           </div>
 

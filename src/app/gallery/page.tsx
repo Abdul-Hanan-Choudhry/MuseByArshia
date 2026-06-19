@@ -13,15 +13,17 @@ export const metadata: Metadata = {
 }
 
 import { GalleryGrid } from '@/components/gallery/GalleryGrid'
+import { prisma } from '@/lib/prisma'
 
 async function getAllPaintings(): Promise<Product[]> {
   try {
-    const res = await fetch(`${process.env.NEXTAUTH_URL}/api/products?limit=50`, {
-      cache: 'no-store',
+    const products = await prisma.product.findMany({
+      where: { isVisible: true },
+      include: { category: { select: { name: true, slug: true } } },
+      orderBy: [{ isFeatured: 'desc' }, { sortOrder: 'asc' }, { createdAt: 'desc' }],
+      take: 50,
     })
-    if (!res.ok) return []
-    const data = await res.json()
-    return data.products ?? []
+    return products as unknown as Product[]
   } catch {
     return []
   }

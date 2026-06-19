@@ -4,6 +4,7 @@ import { ImageGallery } from '@/components/product/ImageGallery'
 import { ProductInfo } from '@/components/product/ProductInfo'
 import { RelatedProducts } from '@/components/product/RelatedProducts'
 import type { Product } from '@/types'
+import { prisma } from '@/lib/prisma'
 
 interface PageProps {
   params: { slug: string }
@@ -11,11 +12,11 @@ interface PageProps {
 
 async function getProduct(slug: string): Promise<Product | null> {
   try {
-    const res = await fetch(`${process.env.NEXTAUTH_URL}/api/products/${slug}`, {
-      cache: 'no-store',
+    const product = await prisma.product.findFirst({
+      where: { OR: [{ id: slug }, { slug }], isVisible: true },
+      include: { category: { select: { name: true, slug: true } } },
     })
-    if (!res.ok) return null
-    return res.json()
+    return product as unknown as Product | null
   } catch {
     return null
   }
@@ -23,13 +24,13 @@ async function getProduct(slug: string): Promise<Product | null> {
 
 async function getRelated(categorySlug: string, currentId: string): Promise<Product[]> {
   try {
-    const res = await fetch(
-      `${process.env.NEXTAUTH_URL}/api/products?category=${categorySlug}&limit=5`,
-      { cache: 'no-store' }
-    )
-    if (!res.ok) return []
-    const data = await res.json()
-    return (data.products as Product[]).filter((p) => p.id !== currentId).slice(0, 4)
+    const products = await prisma.product.findMany({
+      where: { isVisible: true, category: { slug: categorySlug } },
+      include: { category: { select: { name: true, slug: true } } },
+      orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }],
+      take: 5,
+    })
+    return (products as unknown as Product[]).filter((p) => p.id !== currentId).slice(0, 4)
   } catch {
     return []
   }

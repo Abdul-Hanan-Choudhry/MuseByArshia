@@ -12,12 +12,8 @@ const CITIES = [
   'Peshawar', 'Quetta', 'Sialkot', 'Gujranwala', 'Hyderabad', 'Abbottabad', 'Other',
 ]
 
-const PAYMENT_METHODS = [
-  { value: 'COD', label: 'Cash on Delivery', desc: 'Pay when you receive' },
-  { value: 'JAZZCASH', label: 'JazzCash', desc: 'Send to our number' },
-  { value: 'EASYPAISA', label: 'EasyPaisa', desc: 'Send to our number' },
-  { value: 'BANK_TRANSFER', label: 'Bank Transfer', desc: 'Manual confirmation' },
-]
+const SADAPAY_NUMBER = process.env.NEXT_PUBLIC_SADAPAY_NUMBER ?? ''
+const SADAPAY_NAME = process.env.NEXT_PUBLIC_SADAPAY_NAME ?? ''
 
 function CheckoutContent() {
   const { items, subtotal, clearCart } = useCart()
@@ -30,7 +26,7 @@ function CheckoutContent() {
   const [form, setForm] = useState({
     name: '', email: '', phone: '', address: '', city: '', postalCode: '',
   })
-  const [paymentMethod, setPaymentMethod] = useState('COD')
+  const [paymentReference, setPaymentReference] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -46,31 +42,6 @@ function CheckoutContent() {
     setLoading(true)
     setError('')
 
-    if (paymentMethod === 'CARD') {
-      const res = await fetch('/api/checkout/safepay', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          items: items.map((i) => ({ productId: i.product.id })),
-          customer: form,
-          discountCodeId: discountId,
-          discountAmount,
-        }),
-      })
-
-      const data = await res.json()
-
-      if (!res.ok) {
-        setError(data.error ?? 'Failed to initialize payment. Please try again.')
-        setLoading(false)
-        return
-      }
-
-      clearCart()
-      window.location.href = data.checkoutUrl
-      return
-    }
-
     const res = await fetch('/api/checkout/cod', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -79,7 +50,8 @@ function CheckoutContent() {
         customer: form,
         discountCodeId: discountId,
         discountAmount,
-        paymentMethod,
+        paymentMethod: 'SADAPAY',
+        paymentReference: paymentReference.trim() || undefined,
       }),
     })
 
@@ -111,8 +83,26 @@ function CheckoutContent() {
       <div className="max-w-5xl mx-auto px-6">
         <h1 className="font-display text-4xl font-light text-ink mb-10">Checkout</h1>
 
+        {/* Advance payment notice banner */}
+        <div className="bg-ink text-cream px-6 py-4 mb-8 flex gap-3 items-start">
+          <span className="text-gold mt-0.5 flex-shrink-0">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+          </span>
+          <div>
+            <p className="font-sans text-sm font-medium leading-snug">Only advance online payments are accepted.</p>
+            <p className="font-sans text-xs text-cream/70 mt-1 leading-relaxed">
+              Please transfer the full order amount to the account below before placing your order.
+              Once transferred, enter your transaction ID — your order will be confirmed after payment is verified.
+            </p>
+          </div>
+        </div>
+
         <form onSubmit={handleSubmit} className="grid md:grid-cols-2 gap-10">
           <div className="space-y-6">
+
+            {/* Delivery information */}
             <div>
               <h2 className="font-sans font-medium text-ink mb-4">Delivery Information</h2>
               <div className="space-y-4">
@@ -160,36 +150,51 @@ function CheckoutContent() {
               </div>
             </div>
 
+            {/* Payment section */}
             <div>
-              <h2 className="font-sans font-medium text-ink mb-4">Payment Method</h2>
-              <div className="space-y-3">
-                {PAYMENT_METHODS.map((method) => (
-                  <label
-                    key={method.value}
-                    className={`flex items-start gap-3 border p-4 cursor-pointer transition-colors ${
-                      paymentMethod === method.value
-                        ? 'border-ink bg-cream'
-                        : 'border-shop-border bg-white hover:border-ink/50'
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name="paymentMethod"
-                      value={method.value}
-                      checked={paymentMethod === method.value}
-                      onChange={() => setPaymentMethod(method.value)}
-                      className="mt-0.5"
-                    />
+              <h2 className="font-sans font-medium text-ink mb-4">Payment</h2>
+
+              {/* Sadapay account card */}
+              <div className="border border-shop-border bg-white">
+                <div className="bg-cream border-b border-shop-border px-5 py-3 flex items-center justify-between">
+                  <span className="font-sans text-xs uppercase tracking-widest text-shop-muted">Online Transfer</span>
+                  <span className="font-sans text-xs font-medium text-ink bg-ink/5 px-2 py-0.5">Sadapay</span>
+                </div>
+                <div className="px-5 py-5 space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <p className="font-sans text-sm font-medium text-ink">{method.label}</p>
-                      <p className="font-sans text-xs text-shop-muted">{method.desc}</p>
+                      <p className="font-sans text-xs text-shop-muted uppercase tracking-wider mb-1">Account Number</p>
+                      <p className="font-sans text-base font-semibold text-ink tracking-wide">{SADAPAY_NUMBER}</p>
                     </div>
-                  </label>
-                ))}
+                    <div>
+                      <p className="font-sans text-xs text-shop-muted uppercase tracking-wider mb-1">Account Name</p>
+                      <p className="font-sans text-sm font-medium text-ink">{SADAPAY_NAME}</p>
+                    </div>
+                  </div>
+
+                  <div className="border-t border-shop-border pt-4">
+                    <label className="block font-sans text-sm text-ink mb-1.5">
+                      Transaction ID / Reference <span className="text-sale-red">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={paymentReference}
+                      onChange={(e) => setPaymentReference(e.target.value)}
+                      placeholder="Enter your Sadapay transaction ID"
+                      className="w-full border border-shop-border bg-shop-bg px-4 py-2.5 font-sans text-sm text-shop-text focus:outline-none focus:border-ink"
+                    />
+                    <p className="font-sans text-xs text-shop-muted mt-2 leading-relaxed">
+                      Open your Bank app → send the exact total shown → copy the transaction ID and paste it here.
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
+
           </div>
 
+          {/* Order summary */}
           <div>
             <div className="bg-cream border border-shop-border p-6 sticky top-4">
               <h2 className="font-sans font-medium text-ink mb-6">Order Summary</h2>
@@ -230,6 +235,10 @@ function CheckoutContent() {
                   <span>Total</span><span>{formatPrice(finalTotal)}</span>
                 </div>
               </div>
+
+              <p className="font-sans text-xs text-shop-muted mt-4 leading-relaxed">
+                Send exactly <strong className="text-ink">{formatPrice(finalTotal)}</strong> to the Sadapay account and enter the transaction ID before placing your order.
+              </p>
 
               {error && (
                 <p className="font-sans text-xs text-sale-red mt-4" role="alert">{error}</p>

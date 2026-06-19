@@ -16,7 +16,8 @@ import { CategoryPills } from '@/components/shop/CategoryPills'
 import { SortDropdown } from '@/components/shop/SortDropdown'
 import { ProductCard } from '@/components/shop/ProductCard'
 import { Pagination } from '@/components/shop/Pagination'
-import type { PaginatedProducts } from '@/types'
+import type { PaginatedProducts, Product } from '@/types'
+import { prisma } from '@/lib/prisma'
 
 interface PageProps {
   searchParams: {
@@ -27,17 +28,31 @@ interface PageProps {
 }
 
 async function getProducts(searchParams: PageProps['searchParams']): Promise<PaginatedProducts> {
-  const params = new URLSearchParams()
-  if (searchParams.category) params.set('category', searchParams.category)
-  if (searchParams.page) params.set('page', searchParams.page)
+  const category = searchParams.category
+  const page = parseInt(searchParams.page ?? '1')
+  const limit = 12
 
   try {
-    const res = await fetch(
-      `${process.env.NEXTAUTH_URL}/api/products?${params.toString()}`,
-      { cache: 'no-store' }
-    )
-    if (!res.ok) return { products: [], pagination: { page: 1, limit: 12, total: 0, pages: 0 } }
-    return res.json()
+    const where = {
+      isVisible: true,
+      ...(category && { category: { slug: category } }),
+    }
+
+    const [products, total] = await Promise.all([
+      prisma.product.findMany({
+        where,
+        include: { category: { select: { name: true, slug: true } } },
+        orderBy: [{ isFeatured: 'desc' }, { sortOrder: 'asc' }, { createdAt: 'desc' }],
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+      prisma.product.count({ where }),
+    ])
+
+    return {
+      products: products as unknown as Product[],
+      pagination: { page, limit, total, pages: Math.ceil(total / limit) },
+    }
   } catch {
     return { products: [], pagination: { page: 1, limit: 12, total: 0, pages: 0 } }
   }

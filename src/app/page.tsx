@@ -6,13 +6,19 @@ import { VideoSection } from '@/components/homepage/VideoSection'
 import { CatalogPreview } from '@/components/homepage/CatalogPreview'
 import { NewsletterSection } from '@/components/homepage/NewsletterSection'
 import type { Product, SaleBanner } from '@/types'
+import { prisma } from '@/lib/prisma'
 
 async function getBanner(): Promise<SaleBanner | null> {
   try {
-    const res = await fetch(`${process.env.NEXTAUTH_URL}/api/banners`, { cache: 'no-store' })
-    if (!res.ok) return null
-    const data = await res.json()
-    return data.banner ?? null
+    const now = new Date()
+    const banner = await prisma.saleBanner.findFirst({
+      where: {
+        isActive: true,
+        OR: [{ startDate: null }, { startDate: { lte: now } }],
+        AND: [{ OR: [{ endDate: null }, { endDate: { gte: now } }] }],
+      },
+    })
+    return banner as unknown as SaleBanner | null
   } catch {
     return null
   }
@@ -20,13 +26,13 @@ async function getBanner(): Promise<SaleBanner | null> {
 
 async function getFeaturedProducts(): Promise<Product[]> {
   try {
-    const res = await fetch(
-      `${process.env.NEXTAUTH_URL}/api/products?featured=true&limit=8`,
-      { cache: 'no-store' }
-    )
-    if (!res.ok) return []
-    const data = await res.json()
-    return data.products ?? []
+    const products = await prisma.product.findMany({
+      where: { isVisible: true, isFeatured: true },
+      include: { category: { select: { name: true, slug: true } } },
+      orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }],
+      take: 8,
+    })
+    return products as unknown as Product[]
   } catch {
     return []
   }

@@ -72,11 +72,12 @@ export interface Order {
   discountAmount: number
   shippingCost: number
   total: number
-  paymentMethod: 'COD' | 'JAZZCASH' | 'EASYPAISA' | 'BANK_TRANSFER'
+  paymentMethod: 'COD' | 'JAZZCASH' | 'EASYPAISA' | 'BANK_TRANSFER' | 'SADAPAY'
   paymentStatus: 'PENDING' | 'PAID' | 'FAILED' | 'REFUNDED'
   status: 'PENDING' | 'CONFIRMED' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED'
   notes?: string | null
   trackingNumber?: string | null
+  paymentReference?: string | null
   items: OrderItem[]
   discountCode?: DiscountCode | null
   createdAt: string

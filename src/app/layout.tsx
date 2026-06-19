@@ -4,6 +4,7 @@ import './globals.css'
 import { CartProvider } from '@/context/CartContext'
 import { ConditionalLayout } from '@/components/layout/ConditionalLayout'
 import type { SaleBanner as SaleBannerType } from '@/types'
+import { prisma } from '@/lib/prisma'
 
 const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
@@ -86,11 +87,15 @@ export const metadata: Metadata = {
 
 async function getBanner(): Promise<SaleBannerType | null> {
   try {
-    const base = process.env.NEXTAUTH_URL ?? 'http://localhost:3000'
-    const res = await fetch(`${base}/api/banners`, { cache: 'no-store' })
-    if (!res.ok) return null
-    const data = await res.json()
-    return data.banner ?? null
+    const now = new Date()
+    const banner = await prisma.saleBanner.findFirst({
+      where: {
+        isActive: true,
+        OR: [{ startDate: null }, { startDate: { lte: now } }],
+        AND: [{ OR: [{ endDate: null }, { endDate: { gte: now } }] }],
+      },
+    })
+    return banner as unknown as SaleBannerType | null
   } catch {
     return null
   }

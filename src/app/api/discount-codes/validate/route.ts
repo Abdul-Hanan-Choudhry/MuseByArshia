@@ -4,8 +4,15 @@ import { prisma } from '@/lib/prisma'
 export async function POST(req: NextRequest) {
   const { code, cartTotal } = await req.json()
 
+  if (!code || typeof code !== 'string' || code.length > 50) {
+    return NextResponse.json({ error: 'Invalid discount code' }, { status: 400 })
+  }
+  if (typeof cartTotal !== 'number' || cartTotal < 0) {
+    return NextResponse.json({ error: 'Invalid cart total' }, { status: 400 })
+  }
+
   const discount = await prisma.discountCode.findUnique({
-    where: { code: code.toUpperCase() },
+    where: { code: code.toUpperCase().trim() },
   })
 
   if (!discount) {

@@ -18,6 +18,7 @@ function paymentLabel(method: string): string {
     JAZZCASH: 'JazzCash',
     EASYPAISA: 'EasyPaisa',
     BANK_TRANSFER: 'Bank Transfer',
+    SADAPAY: 'Sadapay',
   }
   return map[method] ?? method
 }
@@ -84,6 +85,7 @@ interface OrderForEmail {
   shippingCost: number
   total: number
   paymentMethod: string
+  paymentReference?: string | null
   items: Array<{
     price: number
     quantity: number
@@ -210,6 +212,7 @@ export async function sendOrderConfirmationEmail(order: OrderForEmail) {
       <tr><td style="padding:5px 0;color:#9B7B5A;">Phone</td><td style="padding:5px 0;">${esc(order.customerPhone)}</td></tr>
       <tr><td style="padding:5px 0;color:#9B7B5A;">City</td><td style="padding:5px 0;">${esc(order.city)}</td></tr>
       <tr><td style="padding:5px 0;color:#9B7B5A;">Payment</td><td style="padding:5px 0;">${esc(paymentLabel(order.paymentMethod))}</td></tr>
+      ${order.paymentReference ? `<tr><td style="padding:5px 0;color:#9B7B5A;">Txn Ref</td><td style="padding:5px 0;font-family:'Courier New',Courier,monospace;color:#1A1714;font-weight:bold;">${esc(order.paymentReference)}</td></tr>` : ''}
       <tr><td style="padding:12px 0 0;color:#1A1714;font-size:16px;font-weight:bold;">Total</td><td style="padding:12px 0 0;color:#1A1714;font-size:16px;font-weight:bold;">Rs.&nbsp;${esc(order.total.toLocaleString())}</td></tr>
     </table>
   `
