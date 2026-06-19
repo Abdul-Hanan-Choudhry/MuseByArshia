@@ -5,11 +5,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const raw = process.env.NEXTAUTH_URL ?? 'https://musebyarshia.vercel.app'
   const base = (raw.startsWith('http') ? raw : `https://${raw}`).replace(/\/$/, '')
 
-  const products = await prisma.product.findMany({
-    where: { isVisible: true },
-    select: { slug: true, updatedAt: true },
-    orderBy: { updatedAt: 'desc' },
-  })
+  let products: { slug: string; updatedAt: Date }[] = []
+  try {
+    products = await prisma.product.findMany({
+      where: { isVisible: true },
+      select: { slug: true, updatedAt: true },
+      orderBy: { updatedAt: 'desc' },
+    })
+  } catch {
+    // DB unreachable at build time — return static pages only
+  }
 
   return [
     { url: base,               lastModified: new Date(), changeFrequency: 'weekly',  priority: 1.0 },
