@@ -37,7 +37,9 @@ const greatVibes = Great_Vibes({
 })
 
 function buildBaseUrl() {
-  const raw = process.env.NEXTAUTH_URL ?? 'https://musebyarshia.vercel.app'
+  const raw =
+    process.env.NEXTAUTH_URL ??
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://musebyarshia.vercel.app')
   const withProto = raw.startsWith('http') ? raw : `https://${raw}`
   return withProto.replace(/\/$/, '')
 }
