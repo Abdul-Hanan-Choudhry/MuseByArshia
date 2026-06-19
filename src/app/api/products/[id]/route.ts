@@ -51,6 +51,17 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
   const auth = await requireAdmin()
   if ('error' in auth) return auth.error
 
+  const orderCount = await prisma.orderItem.count({ where: { productId: params.id } })
+
+  if (orderCount > 0) {
+    // Product has order history — soft delete to preserve records
+    await prisma.product.update({
+      where: { id: params.id },
+      data: { isVisible: false, isFeatured: false, isSoldOut: true },
+    })
+    return NextResponse.json({ success: true, softDeleted: true })
+  }
+
   await prisma.product.delete({ where: { id: params.id } })
   return NextResponse.json({ success: true })
 }
