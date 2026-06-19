@@ -13,7 +13,6 @@ const CITIES = [
 ]
 
 const PAYMENT_METHODS = [
-  { value: 'CARD', label: 'Credit / Debit Card', desc: 'Secure online payment via Safepay' },
   { value: 'COD', label: 'Cash on Delivery', desc: 'Pay when you receive' },
   { value: 'JAZZCASH', label: 'JazzCash', desc: 'Send to our number' },
   { value: 'EASYPAISA', label: 'EasyPaisa', desc: 'Send to our number' },
@@ -237,9 +236,7 @@ function CheckoutContent() {
               )}
 
               <Button type="submit" disabled={loading} className="w-full mt-6">
-                {loading
-                  ? paymentMethod === 'CARD' ? 'Redirecting to payment...' : 'Placing Order...'
-                  : paymentMethod === 'CARD' ? 'Pay with Card' : 'Place Order'}
+                {loading ? 'Placing Order...' : 'Place Order'}
               </Button>
             </div>
           </div>
