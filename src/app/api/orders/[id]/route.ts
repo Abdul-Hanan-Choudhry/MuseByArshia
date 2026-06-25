@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAdmin } from '@/lib/adminAuth'
-import { sendShippingEmail } from '@/lib/email'
+import { sendShippingEmail, sendCancellationEmail } from '@/lib/email'
 
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
   const auth = await requireAdmin()
@@ -47,6 +47,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   })
 
   const isNowShipped = current.status !== 'SHIPPED' && body.status === 'SHIPPED'
+  const isNowCancelled = current.status !== 'CANCELLED' && body.status === 'CANCELLED'
 
   if (isNowShipped && order.trackingNumber) {
     try {
@@ -61,6 +62,20 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       })
     } catch (err) {
       console.error('[shipping email] failed:', err)
+    }
+  }
+
+  if (isNowCancelled) {
+    try {
+      await sendCancellationEmail({
+        orderNumber: order.orderNumber,
+        customerName: order.customerName,
+        customerEmail: order.customerEmail,
+        total: order.total,
+        items: order.items,
+      })
+    } catch (err) {
+      console.error('[cancellation email] failed:', err)
     }
   }
 

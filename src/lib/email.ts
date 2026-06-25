@@ -3,6 +3,10 @@ import { Resend } from 'resend'
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null
 const rawFrom = process.env.FROM_EMAIL ?? 'orders@musebyarshia.com'
 const FROM = rawFrom.includes('<') ? rawFrom : `Muse By Arshia <${rawFrom}>`
+const ADMIN_TO = process.env.ADMIN_EMAIL ?? ''
+
+if (!process.env.RESEND_API_KEY) console.warn('[email] RESEND_API_KEY is not set — emails disabled')
+if (!ADMIN_TO) console.warn('[email] ADMIN_EMAIL is not set — admin notifications disabled')
 
 function esc(s: string | number): string {
   return String(s)
@@ -224,7 +228,7 @@ export async function sendOrderConfirmationEmail(order: OrderForEmail) {
   try {
     const r2 = await resend?.emails.send({
       from: FROM,
-      to: process.env.ADMIN_EMAIL!,
+      to: ADMIN_TO,
       subject: `New Order: ${order.orderNumber} — Rs. ${order.total.toLocaleString()}`,
       html: emailShell(adminBody),
     })
@@ -319,7 +323,7 @@ export async function sendShippingEmail(data: ShippingEmailData) {
   try {
     await resend?.emails.send({
       from: FROM,
-      to: process.env.ADMIN_EMAIL!,
+      to: ADMIN_TO,
       subject: `Shipped: ${data.orderNumber} via ${data.courierName}`,
       html: emailShell(adminShipBody),
     })
@@ -349,5 +353,95 @@ export async function sendNewsletterConfirmation(email: string) {
     })
   } catch (err) {
     console.error('[email] newsletter confirmation failed:', err)
+  }
+}
+
+// ─── Order Cancellation ───────────────────────────────────────────────────────
+
+interface CancellationEmailData {
+  orderNumber: string
+  customerName: string
+  customerEmail: string
+  total: number
+  items: Array<{
+    price: number
+    quantity: number
+    product: { title: string }
+  }>
+}
+
+export async function sendCancellationEmail(data: CancellationEmailData) {
+  const itemRows = data.items
+    .map(
+      (item) => `<tr>
+        <td style="padding:10px 0;border-bottom:1px solid #EDE8DF;font-family:Arial,sans-serif;font-size:13px;color:#4A4540;">${esc(item.product.title)}</td>
+        <td style="padding:10px 0;border-bottom:1px solid #EDE8DF;font-family:Arial,sans-serif;font-size:13px;color:#4A4540;text-align:right;white-space:nowrap;">Rs.&nbsp;${esc(item.price.toLocaleString())}</td>
+      </tr>`
+    )
+    .join('')
+
+  const customerBody = `
+    <p style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#9B7B5A;">Order Cancelled</p>
+    <h2 style="margin:0 0 28px;font-family:Georgia,serif;font-size:28px;font-weight:normal;color:#1A1714;">We&rsquo;re sorry, ${esc(data.customerName)}.</h2>
+
+    <p style="margin:0 0 28px;font-family:Arial,sans-serif;font-size:14px;color:#4A4540;line-height:1.8;">
+      Unfortunately, your order could not be processed. This is usually because payment
+      could not be verified. If you believe this is a mistake, please reach out to us directly.
+    </p>
+
+    <div style="background:#F5F0E8;border-left:3px solid #C4A882;padding:18px 22px;margin:0 0 36px;">
+      <p style="margin:0;font-family:Arial,sans-serif;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#9B7B5A;">Order Number</p>
+      <p style="margin:6px 0 0;font-family:Georgia,serif;font-size:20px;color:#1A1714;font-weight:bold;">${esc(data.orderNumber)}</p>
+    </div>
+
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 4px;">
+      <tr>
+        <th style="text-align:left;font-family:Arial,sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#9B7B5A;padding-bottom:10px;border-bottom:1px solid #1A1714;">Artwork</th>
+        <th style="text-align:right;font-family:Arial,sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#9B7B5A;padding-bottom:10px;border-bottom:1px solid #1A1714;">Price</th>
+      </tr>
+      ${itemRows}
+    </table>
+
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 36px;">
+      <tr>
+        <td style="padding:14px 0 0;font-family:Georgia,serif;font-size:16px;font-style:italic;color:#1A1714;border-top:1px solid #E8E4DE;">Order Total</td>
+        <td style="padding:14px 0 0;font-family:Georgia,serif;font-size:16px;font-style:italic;color:#1A1714;border-top:1px solid #E8E4DE;text-align:right;"><strong>Rs.&nbsp;${esc(data.total.toLocaleString())}</strong></td>
+      </tr>
+    </table>
+
+    <p style="margin:0;font-family:Georgia,serif;font-size:13px;font-style:italic;color:#6B6560;line-height:1.8;">
+      If you have any questions, please contact us on Instagram
+      <a href="https://www.instagram.com/arshiasdiary_" style="color:#9B7B5A;">@arshiasdiary_</a>.
+    </p>
+  `
+
+  try {
+    await resend?.emails.send({
+      from: FROM,
+      to: data.customerEmail,
+      subject: `Your order has been cancelled — ${data.orderNumber} | Muse By Arshia`,
+      html: emailShell(customerBody),
+    })
+  } catch (err) {
+    console.error('[email] cancellation email to customer failed:', err)
+  }
+
+  try {
+    await resend?.emails.send({
+      from: FROM,
+      to: ADMIN_TO,
+      subject: `Order Cancelled: ${data.orderNumber}`,
+      html: emailShell(`
+        <p style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#9B7B5A;">Order Cancelled</p>
+        <h2 style="margin:0 0 24px;font-family:Georgia,serif;font-size:22px;font-weight:normal;color:#1A1714;">${esc(data.orderNumber)}</h2>
+        <table cellpadding="0" cellspacing="0" style="font-family:Arial,sans-serif;font-size:13px;color:#4A4540;width:100%;">
+          <tr><td style="padding:5px 0;color:#9B7B5A;width:120px;">Customer</td><td style="padding:5px 0;"><strong style="color:#1A1714;">${esc(data.customerName)}</strong></td></tr>
+          <tr><td style="padding:5px 0;color:#9B7B5A;">Email</td><td style="padding:5px 0;">${esc(data.customerEmail)}</td></tr>
+          <tr><td style="padding:12px 0 0;color:#1A1714;font-size:16px;font-weight:bold;">Total</td><td style="padding:12px 0 0;color:#1A1714;font-size:16px;font-weight:bold;">Rs.&nbsp;${esc(data.total.toLocaleString())}</td></tr>
+        </table>
+      `),
+    })
+  } catch (err) {
+    console.error('[email] cancellation admin notification failed:', err)
   }
 }
