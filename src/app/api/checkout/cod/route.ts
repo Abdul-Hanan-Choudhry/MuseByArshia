@@ -7,6 +7,7 @@ const ALLOWED_PAYMENT_METHODS = ['COD', 'JAZZCASH', 'EASYPAISA', 'BANK_TRANSFER'
 type AllowedMethod = typeof ALLOWED_PAYMENT_METHODS[number]
 
 export async function POST(req: NextRequest) {
+  try {
   const body = await req.json()
   const { items, customer, discountCodeId, discountAmount, paymentMethod, paymentReference } = body
 
@@ -68,7 +69,7 @@ export async function POST(req: NextRequest) {
       paymentStatus: 'PENDING',
       status: 'PENDING',
       paymentReference: ref,
-      discountCodeId: discountCodeId ?? null,
+      discountCodeId: discountCodeId || null,
       items: {
         create: products.map((p) => ({
           productId: p.id,
@@ -101,4 +102,8 @@ export async function POST(req: NextRequest) {
   }
 
   return NextResponse.json({ success: true, orderNumber: order.orderNumber })
+  } catch (err) {
+    console.error('[checkout/cod] unhandled error:', err)
+    return NextResponse.json({ error: 'Something went wrong. Please try again.' }, { status: 500 })
+  }
 }

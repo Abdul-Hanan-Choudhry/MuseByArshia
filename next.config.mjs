@@ -24,6 +24,7 @@ const nextConfig = {
               "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' data: blob: https://res.cloudinary.com",
+              "media-src 'self' https://res.cloudinary.com",
               "font-src 'self'",
               "connect-src 'self' https://api.cloudinary.com",
               "frame-ancestors 'none'",

@@ -217,12 +217,16 @@ export async function sendOrderConfirmationEmail(order: OrderForEmail) {
     </table>
   `
 
-  await resend.emails.send({
-    from: 'Muse By Arshia <onboarding@resend.dev>',
-    to: process.env.ADMIN_EMAIL!,
-    subject: `New Order: ${order.orderNumber} — Rs. ${order.total.toLocaleString()}`,
-    html: emailShell(adminBody),
-  })
+  try {
+    await resend.emails.send({
+      from: 'Muse By Arshia <onboarding@resend.dev>',
+      to: process.env.ADMIN_EMAIL!,
+      subject: `New Order: ${order.orderNumber} — Rs. ${order.total.toLocaleString()}`,
+      html: emailShell(adminBody),
+    })
+  } catch (err) {
+    console.error('[email] admin order notification failed:', err)
+  }
 }
 
 
