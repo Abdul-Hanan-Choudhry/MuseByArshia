@@ -1,7 +1,8 @@
 import { Resend } from 'resend'
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null
-const FROM = process.env.FROM_EMAIL ?? 'Muse By Arshia <orders@musebyarshia.com>'
+const rawFrom = process.env.FROM_EMAIL ?? 'orders@musebyarshia.com'
+const FROM = rawFrom.includes('<') ? rawFrom : `Muse By Arshia <${rawFrom}>`
 
 function esc(s: string | number): string {
   return String(s)
@@ -192,16 +193,18 @@ export async function sendOrderConfirmationEmail(order: OrderForEmail) {
     </p>
   `
 
-  // Customer confirmation — may fail on Resend free tier if no domain is verified
+  // Customer confirmation
   try {
-    await resend?.emails.send({
+    const r1 = await resend?.emails.send({
       from: FROM,
       to: order.customerEmail,
       subject: `Order Confirmed — ${order.orderNumber} | Muse By Arshia`,
       html: emailShell(body),
     })
+    if (r1 && 'error' in r1 && r1.error) console.error('[email] customer send error:', JSON.stringify(r1.error))
+    else console.log('[email] customer confirmation sent, id:', (r1 as { id?: string })?.id)
   } catch (err) {
-    console.error('[email] customer confirmation failed (domain not verified?):', err)
+    console.error('[email] customer confirmation failed:', err)
   }
 
   // Admin notification — always runs regardless of customer email result
@@ -219,12 +222,14 @@ export async function sendOrderConfirmationEmail(order: OrderForEmail) {
   `
 
   try {
-    await resend?.emails.send({
+    const r2 = await resend?.emails.send({
       from: FROM,
       to: process.env.ADMIN_EMAIL!,
       subject: `New Order: ${order.orderNumber} — Rs. ${order.total.toLocaleString()}`,
       html: emailShell(adminBody),
     })
+    if (r2 && 'error' in r2 && r2.error) console.error('[email] admin send error:', JSON.stringify(r2.error))
+    else console.log('[email] admin notification sent, id:', (r2 as { id?: string })?.id)
   } catch (err) {
     console.error('[email] admin order notification failed:', err)
   }
