@@ -105,6 +105,6 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err)
     console.error('[checkout/cod] unhandled error:', message)
-    return NextResponse.json({ error: 'Order failed', detail: message }, { status: 500 })
+    return NextResponse.json({ error: 'Something went wrong. Please try again.' }, { status: 500 })
   }
 }
