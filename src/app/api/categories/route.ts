@@ -3,12 +3,36 @@ import { prisma } from '@/lib/prisma'
 import { requireAdmin } from '@/lib/adminAuth'
 import { generateSlug } from '@/lib/utils'
 
+const DEFAULT_CATEGORIES = [
+  { name: 'Portraits', slug: 'portraits', sortOrder: 1 },
+  { name: 'Abstract', slug: 'abstract', sortOrder: 2 },
+  { name: 'Landscape', slug: 'landscape', sortOrder: 3 },
+  { name: 'Still Life', slug: 'still-life', sortOrder: 4 },
+  { name: 'Limited Editions', slug: 'limited-editions', sortOrder: 5 },
+]
+
 export async function GET() {
-  const categories = await prisma.category.findMany({
-    where: { isVisible: true },
+  let categories = await prisma.category.findMany({
     include: { _count: { select: { products: true } } },
     orderBy: { sortOrder: 'asc' },
   })
+
+  if (categories.length === 0) {
+    await Promise.all(
+      DEFAULT_CATEGORIES.map((cat) =>
+        prisma.category.upsert({
+          where: { slug: cat.slug },
+          update: {},
+          create: { name: cat.name, slug: cat.slug, sortOrder: cat.sortOrder },
+        })
+      )
+    )
+    categories = await prisma.category.findMany({
+      include: { _count: { select: { products: true } } },
+      orderBy: { sortOrder: 'asc' },
+    })
+  }
+
   return NextResponse.json(categories)
 }
 
