@@ -3,10 +3,22 @@ import { Resend } from 'resend'
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null
 const rawFrom = process.env.FROM_EMAIL ?? 'orders@musebyarshia.com'
 const FROM = rawFrom.includes('<') ? rawFrom : `Muse By Arshia <${rawFrom}>`
+const FROM_FALLBACK = 'Muse By Arshia <onboarding@resend.dev>'
 const ADMIN_TO = process.env.ADMIN_EMAIL ?? ''
 
 if (!process.env.RESEND_API_KEY) console.warn('[email] RESEND_API_KEY is not set — emails disabled')
 if (!ADMIN_TO) console.warn('[email] ADMIN_EMAIL is not set — admin notifications disabled')
+
+async function safeSend(payload: Parameters<NonNullable<typeof resend>['emails']['send']>[0]) {
+  if (!resend) return null
+  let result = await resend.emails.send(payload)
+  // If custom domain not yet verified, retry with onboarding@resend.dev fallback
+  if (result && 'error' in result && result.error && (result.error as { statusCode?: number }).statusCode === 403) {
+    console.warn('[email] domain not verified, retrying with onboarding@resend.dev fallback')
+    result = await resend.emails.send({ ...payload, from: FROM_FALLBACK })
+  }
+  return result
+}
 
 function esc(s: string | number): string {
   return String(s)
@@ -201,7 +213,7 @@ export async function sendOrderConfirmationEmail(order: OrderForEmail) {
   console.log('[email] sendOrderConfirmationEmail called for:', order.orderNumber)
   console.log('[email] config → FROM:', FROM, '| ADMIN_TO:', ADMIN_TO || '(not set)', '| resend ready:', !!resend)
   try {
-    const r1 = await resend?.emails.send({
+    const r1 = await safeSend({
       from: FROM,
       to: order.customerEmail,
       subject: `Order Confirmed — ${order.orderNumber} | Muse By Arshia`,
@@ -229,7 +241,7 @@ export async function sendOrderConfirmationEmail(order: OrderForEmail) {
   `
 
   try {
-    const r2 = await resend?.emails.send({
+    const r2 = await safeSend({
       from: FROM,
       to: ADMIN_TO,
       subject: `New Order: ${order.orderNumber} — Rs. ${order.total.toLocaleString()}`,
@@ -302,7 +314,7 @@ export async function sendShippingEmail(data: ShippingEmailData) {
 
   // Customer shipping notification
   try {
-    await resend?.emails.send({
+    await safeSend({
       from: FROM,
       to: data.customerEmail,
       subject: `Your order has shipped — ${data.orderNumber} | Muse By Arshia`,
@@ -325,7 +337,7 @@ export async function sendShippingEmail(data: ShippingEmailData) {
   `
 
   try {
-    await resend?.emails.send({
+    await safeSend({
       from: FROM,
       to: ADMIN_TO,
       subject: `Shipped: ${data.orderNumber} via ${data.courierName}`,
@@ -349,7 +361,7 @@ export async function sendNewsletterConfirmation(email: string) {
   `
 
   try {
-    await resend?.emails.send({
+    await safeSend({
       from: FROM,
       to: email,
       subject: `You're subscribed — Muse By Arshia`,
@@ -420,7 +432,7 @@ export async function sendCancellationEmail(data: CancellationEmailData) {
   `
 
   try {
-    await resend?.emails.send({
+    await safeSend({
       from: FROM,
       to: data.customerEmail,
       subject: `Your order has been cancelled — ${data.orderNumber} | Muse By Arshia`,
@@ -431,7 +443,7 @@ export async function sendCancellationEmail(data: CancellationEmailData) {
   }
 
   try {
-    await resend?.emails.send({
+    await safeSend({
       from: FROM,
       to: ADMIN_TO,
       subject: `Order Cancelled: ${data.orderNumber}`,
@@ -449,3 +461,4 @@ export async function sendCancellationEmail(data: CancellationEmailData) {
     console.error('[email] cancellation admin notification failed:', err)
   }
 }
+
