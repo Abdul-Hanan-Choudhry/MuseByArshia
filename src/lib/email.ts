@@ -218,7 +218,7 @@ export async function sendOrderConfirmationEmail(order: OrderForEmail) {
   `
 
   try {
-    await resend.emails.send({
+    await resend?.emails.send({
       from: 'Muse By Arshia <onboarding@resend.dev>',
       to: process.env.ADMIN_EMAIL!,
       subject: `New Order: ${order.orderNumber} — Rs. ${order.total.toLocaleString()}`,
