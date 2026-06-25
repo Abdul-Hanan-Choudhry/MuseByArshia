@@ -96,6 +96,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+    console.log('[checkout] calling sendOrderConfirmationEmail for', order.orderNumber)
     await sendOrderConfirmationEmail(order)
   } catch (err) {
     console.error('[email] order confirmation failed:', err)

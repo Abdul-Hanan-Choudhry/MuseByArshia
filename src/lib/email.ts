@@ -198,6 +198,8 @@ export async function sendOrderConfirmationEmail(order: OrderForEmail) {
   `
 
   // Customer confirmation
+  console.log('[email] sendOrderConfirmationEmail called for:', order.orderNumber)
+  console.log('[email] config → FROM:', FROM, '| ADMIN_TO:', ADMIN_TO || '(not set)', '| resend ready:', !!resend)
   try {
     const r1 = await resend?.emails.send({
       from: FROM,
@@ -205,10 +207,11 @@ export async function sendOrderConfirmationEmail(order: OrderForEmail) {
       subject: `Order Confirmed — ${order.orderNumber} | Muse By Arshia`,
       html: emailShell(body),
     })
+    console.log('[email] customer send result:', JSON.stringify(r1))
     if (r1 && 'error' in r1 && r1.error) console.error('[email] customer send error:', JSON.stringify(r1.error))
     else console.log('[email] customer confirmation sent, id:', (r1 as { id?: string })?.id)
   } catch (err) {
-    console.error('[email] customer confirmation failed:', err)
+    console.error('[email] customer confirmation EXCEPTION:', String(err))
   }
 
   // Admin notification — always runs regardless of customer email result
@@ -232,10 +235,11 @@ export async function sendOrderConfirmationEmail(order: OrderForEmail) {
       subject: `New Order: ${order.orderNumber} — Rs. ${order.total.toLocaleString()}`,
       html: emailShell(adminBody),
     })
+    console.log('[email] admin send result:', JSON.stringify(r2))
     if (r2 && 'error' in r2 && r2.error) console.error('[email] admin send error:', JSON.stringify(r2.error))
     else console.log('[email] admin notification sent, id:', (r2 as { id?: string })?.id)
   } catch (err) {
-    console.error('[email] admin order notification failed:', err)
+    console.error('[email] admin order EXCEPTION:', String(err))
   }
 }
 
