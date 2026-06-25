@@ -1,6 +1,6 @@
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null
 
 function esc(s: string | number): string {
   return String(s)
@@ -193,7 +193,7 @@ export async function sendOrderConfirmationEmail(order: OrderForEmail) {
 
   // Customer confirmation — may fail on Resend free tier if no domain is verified
   try {
-    await resend.emails.send({
+    await resend?.emails.send({
       from: 'Muse By Arshia <onboarding@resend.dev>',
       to: order.customerEmail,
       subject: `Order Confirmed — ${order.orderNumber} | Muse By Arshia`,
@@ -288,7 +288,7 @@ export async function sendShippingEmail(data: ShippingEmailData) {
 
   // Customer shipping notification
   try {
-    await resend.emails.send({
+    await resend?.emails.send({
       from: 'Muse By Arshia <onboarding@resend.dev>',
       to: data.customerEmail,
       subject: `Your order has shipped — ${data.orderNumber} | Muse By Arshia`,
@@ -310,12 +310,16 @@ export async function sendShippingEmail(data: ShippingEmailData) {
     </table>
   `
 
-  await resend.emails.send({
-    from: 'Muse By Arshia <onboarding@resend.dev>',
-    to: process.env.ADMIN_EMAIL!,
-    subject: `Shipped: ${data.orderNumber} via ${data.courierName}`,
-    html: emailShell(adminShipBody),
-  })
+  try {
+    await resend?.emails.send({
+      from: 'Muse By Arshia <onboarding@resend.dev>',
+      to: process.env.ADMIN_EMAIL!,
+      subject: `Shipped: ${data.orderNumber} via ${data.courierName}`,
+      html: emailShell(adminShipBody),
+    })
+  } catch (err) {
+    console.error('[email] admin shipping notification failed:', err)
+  }
 }
 
 // ─── Newsletter ───────────────────────────────────────────────────────────────
@@ -330,10 +334,14 @@ export async function sendNewsletterConfirmation(email: string) {
     </p>
   `
 
-  await resend.emails.send({
-    from: 'Muse By Arshia <onboarding@resend.dev>',
-    to: email,
-    subject: `You're subscribed — Muse By Arshia`,
-    html: emailShell(body),
-  })
+  try {
+    await resend?.emails.send({
+      from: 'Muse By Arshia <onboarding@resend.dev>',
+      to: email,
+      subject: `You're subscribed — Muse By Arshia`,
+      html: emailShell(body),
+    })
+  } catch (err) {
+    console.error('[email] newsletter confirmation failed:', err)
+  }
 }
