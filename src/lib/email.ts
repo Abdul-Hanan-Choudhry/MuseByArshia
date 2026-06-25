@@ -1,6 +1,7 @@
 import { Resend } from 'resend'
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null
+const FROM = process.env.FROM_EMAIL ?? 'Muse By Arshia <orders@musebyarshia.com>'
 
 function esc(s: string | number): string {
   return String(s)
@@ -194,7 +195,7 @@ export async function sendOrderConfirmationEmail(order: OrderForEmail) {
   // Customer confirmation — may fail on Resend free tier if no domain is verified
   try {
     await resend?.emails.send({
-      from: 'Muse By Arshia <onboarding@resend.dev>',
+      from: FROM,
       to: order.customerEmail,
       subject: `Order Confirmed — ${order.orderNumber} | Muse By Arshia`,
       html: emailShell(body),
@@ -219,7 +220,7 @@ export async function sendOrderConfirmationEmail(order: OrderForEmail) {
 
   try {
     await resend?.emails.send({
-      from: 'Muse By Arshia <onboarding@resend.dev>',
+      from: FROM,
       to: process.env.ADMIN_EMAIL!,
       subject: `New Order: ${order.orderNumber} — Rs. ${order.total.toLocaleString()}`,
       html: emailShell(adminBody),
@@ -289,7 +290,7 @@ export async function sendShippingEmail(data: ShippingEmailData) {
   // Customer shipping notification
   try {
     await resend?.emails.send({
-      from: 'Muse By Arshia <onboarding@resend.dev>',
+      from: FROM,
       to: data.customerEmail,
       subject: `Your order has shipped — ${data.orderNumber} | Muse By Arshia`,
       html: emailShell(body),
@@ -312,7 +313,7 @@ export async function sendShippingEmail(data: ShippingEmailData) {
 
   try {
     await resend?.emails.send({
-      from: 'Muse By Arshia <onboarding@resend.dev>',
+      from: FROM,
       to: process.env.ADMIN_EMAIL!,
       subject: `Shipped: ${data.orderNumber} via ${data.courierName}`,
       html: emailShell(adminShipBody),
@@ -336,7 +337,7 @@ export async function sendNewsletterConfirmation(email: string) {
 
   try {
     await resend?.emails.send({
-      from: 'Muse By Arshia <onboarding@resend.dev>',
+      from: FROM,
       to: email,
       subject: `You're subscribed — Muse By Arshia`,
       html: emailShell(body),
