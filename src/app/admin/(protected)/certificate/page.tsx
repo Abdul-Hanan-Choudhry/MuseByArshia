@@ -6,12 +6,21 @@ import {
   type CertificateData,
 } from '@/components/certificate/CertificateOfAuthenticity'
 
+function todayFormatted() {
+  return new Date().toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  })
+}
+
 const emptyForm: CertificateData = {
   title: '',
   name: 'Shanzay Arshia',
   year: String(new Date().getFullYear()),
   size: '',
   medium: '',
+  issueDate: todayFormatted(),
 }
 
 export default function AdminCertificatePage() {
@@ -39,7 +48,7 @@ export default function AdminCertificatePage() {
       const dataUrl = await toPng(certRef.current, {
         cacheBust: true,
         pixelRatio: 2,
-        backgroundColor: '#F5F0E8',
+        backgroundColor: '#F7F2EA',
       })
 
       const link = document.createElement('a')
@@ -81,7 +90,7 @@ export default function AdminCertificatePage() {
         <div>
           <h1 className="text-xl md:text-2xl font-semibold text-gray-900">Certificate of Authenticity</h1>
           <p className="text-sm text-gray-500 mt-1">
-            Edit title, name, year, dimension and medium — then download or print for the order.
+            Edit title, name, year, dimension and medium — then download or print.
           </p>
         </div>
         <div className="flex gap-2">
@@ -131,6 +140,7 @@ export default function AdminCertificatePage() {
               setForm({
                 ...emptyForm,
                 year: String(new Date().getFullYear()),
+                issueDate: todayFormatted(),
               })
             }
             className="w-full border border-gray-300 text-gray-600 text-sm py-2 mt-2 hover:bg-gray-50"
