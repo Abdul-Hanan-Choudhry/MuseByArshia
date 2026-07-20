@@ -3,13 +3,14 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { signOut } from 'next-auth/react'
-import { LayoutDashboard, Package, ShoppingBag, Tag, Megaphone, LogOut, Menu, X } from 'lucide-react'
+import { LayoutDashboard, Package, ShoppingBag, Tag, Megaphone, Award, LogOut, Menu, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const NAV = [
   { label: 'Dashboard', href: '/admin', icon: LayoutDashboard },
   { label: 'Products', href: '/admin/products', icon: Package },
   { label: 'Orders', href: '/admin/orders', icon: ShoppingBag },
+  { label: 'Certificate', href: '/admin/certificate', icon: Award },
   { label: 'Discounts', href: '/admin/discounts', icon: Tag },
   { label: 'Banners', href: '/admin/banners', icon: Megaphone },
 ]
