@@ -6,12 +6,28 @@ import {
   type CertificateData,
 } from '@/components/certificate/CertificateOfAuthenticity'
 
+function todayFormatted() {
+  return new Date().toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  })
+}
+
+function makeCertNumber() {
+  const year = new Date().getFullYear()
+  const random = Math.floor(Math.random() * 9000) + 1000
+  return `MBA-${year}-${random}`
+}
+
 const emptyForm: CertificateData = {
   title: '',
   name: 'Shanzay Arshia',
   year: String(new Date().getFullYear()),
   size: '',
   medium: '',
+  certificateNumber: makeCertNumber(),
+  issueDate: todayFormatted(),
 }
 
 export default function AdminCertificatePage() {
@@ -48,7 +64,7 @@ export default function AdminCertificatePage() {
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/(^-|-$)/g, '')
-      link.download = `certificate-${safeTitle || 'artwork'}.png`
+      link.download = `certificate-${safeTitle || 'artwork'}-${form.certificateNumber}.png`
       link.href = dataUrl
       link.click()
     } catch (err) {
@@ -71,18 +87,22 @@ export default function AdminCertificatePage() {
   const fields: Array<{ name: keyof CertificateData; label: string; placeholder: string }> = [
     { name: 'title', label: 'Title *', placeholder: 'e.g. Golden Hour' },
     { name: 'name', label: 'Name', placeholder: 'e.g. Shanzay Arshia' },
-    { name: 'year', label: 'Year', placeholder: 'e.g. 2026' },
-    { name: 'size', label: 'Dimension', placeholder: 'e.g. 24 x 36 inches' },
     { name: 'medium', label: 'Medium', placeholder: 'e.g. Acrylic on canvas' },
+    { name: 'size', label: 'Dimension', placeholder: 'e.g. 24 x 36 inches' },
+    { name: 'year', label: 'Year', placeholder: 'e.g. 2026' },
+    { name: 'certificateNumber', label: 'Certificate No.', placeholder: 'MBA-2026-1234' },
+    { name: 'issueDate', label: 'Date of Issue', placeholder: todayFormatted() },
   ]
 
   return (
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 print:hidden">
         <div>
-          <h1 className="text-xl md:text-2xl font-semibold text-gray-900">Certificate of Authenticity</h1>
+          <h1 className="text-xl md:text-2xl font-semibold text-gray-900">
+            Certificate of Authenticity
+          </h1>
           <p className="text-sm text-gray-500 mt-1">
-            Edit title, name, year, dimension and medium — then download or print for the order.
+            Website-branded certificate — fill details, then download PNG for each order.
           </p>
         </div>
         <div className="flex gap-2">
@@ -131,18 +151,20 @@ export default function AdminCertificatePage() {
             onClick={() =>
               setForm({
                 ...emptyForm,
+                certificateNumber: makeCertNumber(),
+                issueDate: todayFormatted(),
                 year: String(new Date().getFullYear()),
               })
             }
             className="w-full border border-gray-300 text-gray-600 text-sm py-2 mt-2 hover:bg-gray-50"
           >
-            Reset Fields
+            Reset &amp; New Certificate No.
           </button>
         </div>
 
         <div className="print:p-0 overflow-auto">
           <div className="print:hidden mb-3 text-xs text-gray-400 uppercase tracking-wider">
-            Live Preview — A4 size
+            Live Preview — Original brand design
           </div>
           <div className="admin-print-cert inline-block shadow-lg print:shadow-none origin-top-left scale-[0.48] sm:scale-[0.55] md:scale-[0.65] lg:scale-[0.72] print:scale-100 print:origin-top-left">
             <CertificateOfAuthenticity ref={certRef} data={form} />

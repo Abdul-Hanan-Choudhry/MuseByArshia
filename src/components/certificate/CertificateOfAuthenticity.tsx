@@ -7,20 +7,20 @@ export interface CertificateData {
   year: string
   size: string
   medium: string
+  certificateNumber: string
+  issueDate: string
 }
 
 interface Props {
   data: CertificateData
 }
 
+/**
+ * Original Muse by Arshia website-branded certificate
+ * (cream / ink / gold · Cormorant · Great Vibes)
+ */
 export const CertificateOfAuthenticity = forwardRef<HTMLDivElement, Props>(
   function CertificateOfAuthenticity({ data }, ref) {
-    const title = data.title.trim() || 'Untitled'
-    const name = data.name.trim() || 'Shanzay Arshia'
-    const year = data.year.trim() || '—'
-    const size = data.size.trim() || '—'
-    const medium = data.medium.trim() || '—'
-
     return (
       <div
         ref={ref}
@@ -43,7 +43,7 @@ export const CertificateOfAuthenticity = forwardRef<HTMLDivElement, Props>(
           />
         ))}
 
-        {/* Soft blush wash — matches site brand */}
+        {/* Soft blush wash */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
@@ -68,30 +68,53 @@ export const CertificateOfAuthenticity = forwardRef<HTMLDivElement, Props>(
             <div className="flex-1 h-px bg-[#B8A070]" />
           </div>
 
-          <h2 className="font-sans text-[20px] tracking-[0.28em] uppercase text-[#1A1714] font-normal mb-10">
+          <h2 className="font-sans text-[22px] tracking-[0.28em] uppercase text-[#1A1714] font-normal mb-10">
             Certificate of Authenticity
           </h2>
 
-          {/* Intro */}
-          <p className="font-sans text-center text-[15px] leading-relaxed text-[#4A4540] max-w-md mb-12">
-            This certifies that the following artwork is an original,
-            handcrafted painting and a one-of-a-kind work from Muse by Arshia.
+          {/* Body */}
+          <p className="font-sans text-center text-[15px] leading-relaxed text-[#4A4540] max-w-lg mb-8">
+            This certifies that the artwork described below is an
+            <span className="text-[#1A1714] font-medium"> original, handcrafted painting </span>
+            created by the artist
+            <span className="text-[#1A1714] font-medium"> {data.name.trim() || 'Shanzay Arshia'}</span>,
+            and is hereby authenticated as a one-of-a-kind work from Muse by Arshia.
           </p>
 
-          {/* Editable details */}
-          <div className="w-full max-w-md space-y-7 mb-8">
-            <DetailRow label="Title" value={title} large />
-            <DetailRow label="Name" value={name} />
-            <DetailRow label="Year" value={year} />
-            <DetailRow label="Dimension" value={size} />
-            <DetailRow label="Medium" value={medium} />
+          {/* Artwork title */}
+          <div className="text-center mb-10 w-full">
+            <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-[#9B7B5A] mb-2">
+              Title of Work
+            </p>
+            <p className="font-accent text-[32px] italic text-[#1A1714] leading-snug px-4">
+              {data.title.trim() || 'Untitled'}
+            </p>
+          </div>
+
+          {/* Details grid */}
+          <div className="font-sans w-full max-w-md grid grid-cols-2 gap-x-10 gap-y-5 mb-10">
+            {[
+              { label: 'Name', value: data.name.trim() || '—' },
+              { label: 'Medium', value: data.medium.trim() || '—' },
+              { label: 'Dimension', value: data.size.trim() || '—' },
+              { label: 'Year', value: data.year.trim() || '—' },
+              { label: 'Certificate No.', value: data.certificateNumber.trim() || '—' },
+              { label: 'Date', value: data.issueDate.trim() || '—' },
+            ].map((item) => (
+              <div key={item.label} className="border-b border-[#E0DAD0] pb-2">
+                <p className="text-[10px] tracking-[0.22em] uppercase text-[#9B7B5A] mb-1">
+                  {item.label}
+                </p>
+                <p className="text-[14px] text-[#1A1714]">{item.value}</p>
+              </div>
+            ))}
           </div>
 
           <div className="flex-1" />
 
-          {/* Signature */}
-          <div className="w-full max-w-md flex justify-center mb-8">
-            <div className="text-center w-56">
+          {/* Signature block */}
+          <div className="w-full max-w-md flex justify-between items-end mb-6">
+            <div className="text-center w-44">
               <p className="font-script text-[40px] text-[#1A1714] leading-none mb-1">
                 Shanzay
               </p>
@@ -101,6 +124,16 @@ export const CertificateOfAuthenticity = forwardRef<HTMLDivElement, Props>(
               </p>
               <p className="font-sans text-[12px] text-[#1A1714] mt-1">
                 Shanzay Arshia
+              </p>
+            </div>
+
+            <div className="text-center w-44">
+              <p className="font-sans text-[15px] text-[#1A1714] mb-1 h-9 flex items-end justify-center">
+                {data.issueDate.trim() || '—'}
+              </p>
+              <div className="h-px bg-[#B8A070] mb-2" />
+              <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-[#9B7B5A]">
+                Date of Issue
               </p>
             </div>
           </div>
@@ -124,30 +157,3 @@ export const CertificateOfAuthenticity = forwardRef<HTMLDivElement, Props>(
     )
   }
 )
-
-function DetailRow({
-  label,
-  value,
-  large,
-}: {
-  label: string
-  value: string
-  large?: boolean
-}) {
-  return (
-    <div className="text-center border-b border-[#E0DAD0] pb-4">
-      <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-[#9B7B5A] mb-2">
-        {label}
-      </p>
-      <p
-        className={
-          large
-            ? 'font-accent text-[28px] italic text-[#1A1714] leading-snug'
-            : 'font-display text-[20px] italic text-[#1A1714] leading-snug'
-        }
-      >
-        {value}
-      </p>
-    </div>
-  )
-}
