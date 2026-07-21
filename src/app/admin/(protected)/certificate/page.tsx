@@ -6,28 +6,12 @@ import {
   type CertificateData,
 } from '@/components/certificate/CertificateOfAuthenticity'
 
-function todayFormatted() {
-  return new Date().toLocaleDateString('en-GB', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  })
-}
-
-function makeCertNumber() {
-  const year = new Date().getFullYear()
-  const random = Math.floor(Math.random() * 9000) + 1000
-  return `MBA-${year}-${random}`
-}
-
 const emptyForm: CertificateData = {
   title: '',
   name: 'Shanzay Arshia',
   year: String(new Date().getFullYear()),
   size: '',
   medium: '',
-  certificateNumber: makeCertNumber(),
-  issueDate: todayFormatted(),
 }
 
 export default function AdminCertificatePage() {
@@ -51,21 +35,12 @@ export default function AdminCertificatePage() {
     setError('')
 
     try {
-      // Wait for fonts + background image so PNG matches on-screen preview
       await document.fonts.ready
-      const bg = certRef.current.querySelector('img')
-      if (bg && !bg.complete) {
-        await new Promise<void>((resolve) => {
-          bg.onload = () => resolve()
-          bg.onerror = () => resolve()
-        })
-      }
-
       const { toPng } = await import('html-to-image')
       const dataUrl = await toPng(certRef.current, {
         cacheBust: true,
         pixelRatio: 2,
-        backgroundColor: '#F5F0E1',
+        backgroundColor: '#F5F0E8',
       })
 
       const link = document.createElement('a')
@@ -73,7 +48,7 @@ export default function AdminCertificatePage() {
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/(^-|-$)/g, '')
-      link.download = `certificate-${safeTitle || 'artwork'}-${form.certificateNumber}.png`
+      link.download = `certificate-${safeTitle || 'artwork'}.png`
       link.href = dataUrl
       link.click()
     } catch (err) {
@@ -95,12 +70,10 @@ export default function AdminCertificatePage() {
 
   const fields: Array<{ name: keyof CertificateData; label: string; placeholder: string }> = [
     { name: 'title', label: 'Title *', placeholder: 'e.g. Golden Hour' },
-    { name: 'name', label: 'Artist Name', placeholder: 'e.g. Shanzay Arshia' },
-    { name: 'medium', label: 'Medium', placeholder: 'e.g. Acrylic on canvas' },
-    { name: 'size', label: 'Dimensions', placeholder: 'e.g. 24 x 36 inches' },
+    { name: 'name', label: 'Name', placeholder: 'e.g. Shanzay Arshia' },
     { name: 'year', label: 'Year', placeholder: 'e.g. 2026' },
-    { name: 'certificateNumber', label: 'Certificate No.', placeholder: 'MBA-2026-1234' },
-    { name: 'issueDate', label: 'Date', placeholder: todayFormatted() },
+    { name: 'size', label: 'Dimension', placeholder: 'e.g. 24 x 36 inches' },
+    { name: 'medium', label: 'Medium', placeholder: 'e.g. Acrylic on canvas' },
   ]
 
   return (
@@ -109,7 +82,7 @@ export default function AdminCertificatePage() {
         <div>
           <h1 className="text-xl md:text-2xl font-semibold text-gray-900">Certificate of Authenticity</h1>
           <p className="text-sm text-gray-500 mt-1">
-            Fill in the fields, then download a PNG matching the official certificate design.
+            Edit title, name, year, dimension and medium — then download or print for the order.
           </p>
         </div>
         <div className="flex gap-2">
@@ -158,14 +131,12 @@ export default function AdminCertificatePage() {
             onClick={() =>
               setForm({
                 ...emptyForm,
-                certificateNumber: makeCertNumber(),
-                issueDate: todayFormatted(),
                 year: String(new Date().getFullYear()),
               })
             }
             className="w-full border border-gray-300 text-gray-600 text-sm py-2 mt-2 hover:bg-gray-50"
           >
-            Reset &amp; New Certificate No.
+            Reset Fields
           </button>
         </div>
 
