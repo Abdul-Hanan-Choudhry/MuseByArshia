@@ -14,19 +14,12 @@ function todayFormatted() {
   })
 }
 
-function makeCertNumber() {
-  const year = new Date().getFullYear()
-  const random = Math.floor(Math.random() * 9000) + 1000
-  return `MBA-${year}-${random}`
-}
-
 const emptyForm: CertificateData = {
   title: '',
   name: 'Shanzay Arshia',
   year: String(new Date().getFullYear()),
   size: '',
   medium: '',
-  certificateNumber: makeCertNumber(),
   issueDate: todayFormatted(),
 }
 
@@ -72,7 +65,7 @@ export default function AdminCertificatePage() {
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/(^-|-$)/g, '')
-      link.download = `certificate-${safeTitle || 'artwork'}-${form.certificateNumber}.png`
+      link.download = `certificate-${safeTitle || 'artwork'}.png`
       link.href = dataUrl
       link.click()
     } catch (err) {
@@ -98,7 +91,6 @@ export default function AdminCertificatePage() {
     { name: 'medium', label: 'Medium', placeholder: 'e.g. Acrylic on canvas' },
     { name: 'size', label: 'Dimensions', placeholder: 'e.g. 24 x 36 inches' },
     { name: 'year', label: 'Year', placeholder: 'e.g. 2026' },
-    { name: 'certificateNumber', label: 'Certificate No.', placeholder: 'MBA-2026-1234' },
     { name: 'issueDate', label: 'Date', placeholder: todayFormatted() },
   ]
 
@@ -159,20 +151,19 @@ export default function AdminCertificatePage() {
             onClick={() =>
               setForm({
                 ...emptyForm,
-                certificateNumber: makeCertNumber(),
                 issueDate: todayFormatted(),
                 year: String(new Date().getFullYear()),
               })
             }
             className="w-full border border-gray-300 text-gray-600 text-sm py-2 mt-2 hover:bg-gray-50"
           >
-            Reset &amp; New Certificate No.
+            Reset Form
           </button>
         </div>
 
         <div className="print:p-0 overflow-auto">
           <div className="print:hidden mb-3 text-xs text-amber-700 uppercase tracking-wider font-medium">
-            Preview v3 — Botanical gold design
+            Preview — Botanical gold design
           </div>
           <div className="admin-print-cert inline-block shadow-lg print:shadow-none origin-top-left scale-[0.48] sm:scale-[0.55] md:scale-[0.65] lg:scale-[0.72] print:scale-100 print:origin-top-left">
             <CertificateOfAuthenticity ref={certRef} data={form} />
