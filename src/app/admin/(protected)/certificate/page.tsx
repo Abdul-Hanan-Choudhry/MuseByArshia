@@ -48,7 +48,7 @@ export default function AdminCertificatePage() {
       const dataUrl = await toPng(certRef.current, {
         cacheBust: true,
         pixelRatio: 2,
-        backgroundColor: '#F7F2EA',
+        backgroundColor: '#F5F2EB',
       })
 
       const link = document.createElement('a')
