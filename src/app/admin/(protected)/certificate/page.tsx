@@ -163,9 +163,9 @@ export default function AdminCertificatePage() {
 
         <div className="print:p-0 overflow-auto">
           <div className="print:hidden mb-3 text-xs text-amber-700 uppercase tracking-wider font-medium">
-            Preview — Botanical gold design
+            Preview — A4 (210 × 297 mm)
           </div>
-          <div className="admin-print-cert inline-block shadow-lg print:shadow-none origin-top-left scale-[0.48] sm:scale-[0.55] md:scale-[0.65] lg:scale-[0.72] print:scale-100 print:origin-top-left">
+          <div className="admin-print-cert inline-block shadow-lg print:shadow-none origin-top-left scale-[0.42] sm:scale-[0.5] md:scale-[0.58] lg:scale-[0.65] print:scale-100">
             <CertificateOfAuthenticity ref={certRef} data={form} />
           </div>
         </div>
@@ -173,6 +173,16 @@ export default function AdminCertificatePage() {
 
       <style jsx global>{`
         @media print {
+          html,
+          body {
+            width: 210mm !important;
+            height: 297mm !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            background: white !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
           body * {
             visibility: hidden !important;
           }
@@ -181,11 +191,20 @@ export default function AdminCertificatePage() {
             visibility: visible !important;
           }
           .admin-print-cert {
-            position: absolute !important;
+            position: fixed !important;
             left: 0 !important;
             top: 0 !important;
+            width: 210mm !important;
+            height: 297mm !important;
+            margin: 0 !important;
+            padding: 0 !important;
             transform: none !important;
             box-shadow: none !important;
+            overflow: hidden !important;
+          }
+          .admin-print-cert > * {
+            width: 210mm !important;
+            height: 297mm !important;
           }
           @page {
             size: A4 portrait;

@@ -62,7 +62,7 @@ function Divider() {
 
 function GoldSeal() {
   return (
-    <div className="relative w-[210px] h-[210px] flex items-center justify-center">
+    <div className="relative w-[180px] h-[180px] flex items-center justify-center">
       <svg viewBox="0 0 200 200" className="absolute inset-0 w-full h-full drop-shadow-md" aria-hidden>
         <defs>
           <radialGradient id="sealGoldFill" cx="35%" cy="30%" r="75%">
@@ -153,14 +153,21 @@ export const CertificateOfAuthenticity = forwardRef<HTMLDivElement, Props>(
     return (
       <div
         ref={ref}
-        className={`relative w-[794px] h-[1123px] overflow-hidden select-none ${montserrat.className}`}
-        style={{ backgroundColor: C.cream, color: C.charcoal }}
+        className={`relative overflow-hidden select-none ${montserrat.className}`}
+        style={{
+          width: '210mm',
+          height: '297mm',
+          backgroundColor: C.cream,
+          color: C.charcoal,
+          boxSizing: 'border-box',
+        }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/images/certificate-bg.png"
           alt=""
-          className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+          className="absolute inset-0 w-full h-full pointer-events-none"
+          style={{ objectFit: 'fill' }}
           draggable={false}
         />
 
@@ -172,7 +179,34 @@ export const CertificateOfAuthenticity = forwardRef<HTMLDivElement, Props>(
           }}
         />
 
-        <div className="relative z-10 h-full flex flex-col items-center justify-between px-[72px] py-[56px]">
+        {/* Guaranteed visible double border — inset so it never clips on A4 */}
+        <div
+          className="absolute pointer-events-none z-[5]"
+          style={{ inset: '8mm', border: `1.25px solid ${C.gold}` }}
+        />
+        <div
+          className="absolute pointer-events-none z-[5]"
+          style={{ inset: '10mm', border: `1.5px solid ${C.gold}` }}
+        />
+        {/* Corner diamonds */}
+        {[
+          { top: '7mm', left: '7mm' },
+          { top: '7mm', right: '7mm' },
+          { bottom: '7mm', left: '7mm' },
+          { bottom: '7mm', right: '7mm' },
+        ].map((pos, i) => (
+          <div
+            key={i}
+            className="absolute z-[6] w-[7px] h-[7px] rotate-45"
+            style={{ ...pos, backgroundColor: C.gold }}
+          />
+        ))}
+
+        {/* Content stays inside the border safe area */}
+        <div
+          className="relative z-10 h-full flex flex-col items-center justify-between"
+          style={{ padding: '16mm 18mm' }}
+        >
           <div className="flex flex-col items-center w-full">
             <p
               className="text-[13px] tracking-[0.48em] uppercase font-semibold mb-[14px]"
@@ -182,7 +216,7 @@ export const CertificateOfAuthenticity = forwardRef<HTMLDivElement, Props>(
             </p>
 
             <h1
-              className={`${baskerville.className} text-[56px] italic font-normal leading-none tracking-wide`}
+              className={`${baskerville.className} text-[48px] italic font-normal leading-none tracking-wide`}
               style={{ color: C.charcoal }}
             >
               Muse by Arshia
@@ -191,14 +225,14 @@ export const CertificateOfAuthenticity = forwardRef<HTMLDivElement, Props>(
             <Divider />
 
             <h2
-              className="text-[18px] tracking-[0.32em] uppercase font-semibold mt-[4px] mb-[28px]"
+              className="text-[15px] tracking-[0.32em] uppercase font-semibold mt-[2px] mb-[18px]"
               style={{ color: C.charcoal }}
             >
               Certificate of Authenticity
             </h2>
 
             <p
-              className={`${garamond.className} text-center text-[21px] leading-[1.75] max-w-[540px] mb-[8px]`}
+              className={`${garamond.className} text-center text-[18px] leading-[1.65] max-w-[480px] mb-[6px]`}
               style={{ color: C.charcoal }}
             >
               This is to certify that the artwork described below is an original
@@ -209,33 +243,33 @@ export const CertificateOfAuthenticity = forwardRef<HTMLDivElement, Props>(
               .
             </p>
             <p
-              className={`${garamond.className} text-center text-[18px] leading-[1.65] max-w-[500px] mb-[28px]`}
+              className={`${garamond.className} text-center text-[16px] leading-[1.55] max-w-[460px] mb-[18px]`}
               style={{ color: C.charcoal }}
             >
               All copyright and reproduction rights are retained by the artist.
             </p>
 
             <p
-              className={`${baskerville.className} text-[46px] italic text-center leading-snug px-2 mb-[32px]`}
+              className={`${baskerville.className} text-[38px] italic text-center leading-snug px-2 mb-[20px]`}
               style={{ color: C.gold }}
             >
               &ldquo;{title}&rdquo;
             </p>
 
-            <div className="w-[400px] space-y-[18px]">
+            <div className="w-[380px] space-y-[14px]">
               {details.map((item) => (
                 <div key={item.label} className="grid grid-cols-[1fr_16px_1.5fr] items-baseline">
                   <span
-                    className={`${garamond.className} text-[20px] text-right`}
+                    className={`${garamond.className} text-[17px] text-right`}
                     style={{ color: C.charcoal }}
                   >
                     {item.label}
                   </span>
-                  <span className="text-center text-[16px]" style={{ color: C.gold }}>
+                  <span className="text-center text-[15px]" style={{ color: C.gold }}>
                     |
                   </span>
                   <span
-                    className={`${garamond.className} text-[21px] italic`}
+                    className={`${garamond.className} text-[18px] italic`}
                     style={{ color: C.charcoal }}
                   >
                     {item.value}
@@ -246,50 +280,50 @@ export const CertificateOfAuthenticity = forwardRef<HTMLDivElement, Props>(
           </div>
 
           <div className="flex flex-col items-center w-full">
-            <div className="w-full max-w-[540px] flex justify-between items-end mb-[28px]">
-              <div className="text-center w-[220px]">
+            <div className="w-full max-w-[480px] flex justify-between items-end mb-[16px]">
+              <div className="text-center w-[200px]">
                 <p
-                  className={`${vibes.className} text-[52px] leading-none`}
+                  className={`${vibes.className} text-[44px] leading-none`}
                   style={{ color: C.gold }}
                 >
                   Shanzay
                 </p>
-                <div className="flex items-center gap-2 mt-[4px] mb-[10px]">
+                <div className="flex items-center gap-2 mt-[2px] mb-[8px]">
                   <div className="flex-1 h-[1.5px]" style={{ backgroundColor: C.gold }} />
                   <div className="w-[6px] h-[6px] rotate-45 shrink-0" style={{ backgroundColor: C.gold }} />
                   <div className="flex-1 h-[1.5px]" style={{ backgroundColor: C.gold }} />
                 </div>
-                <p className="text-[11px] tracking-[0.1em] uppercase font-medium" style={{ color: C.gold }}>
+                <p className="text-[10px] tracking-[0.1em] uppercase font-medium" style={{ color: C.gold }}>
                   Artist Signature / Shanzay Arshia
                 </p>
               </div>
 
-              <div className="text-center w-[190px]">
+              <div className="text-center w-[170px]">
                 <p
-                  className={`${garamond.className} text-[20px] italic h-[52px] flex items-end justify-center`}
+                  className={`${garamond.className} text-[17px] italic h-[44px] flex items-end justify-center`}
                   style={{ color: C.charcoal }}
                 >
                   {issueDate}
                 </p>
-                <div className="flex items-center gap-2 mt-[4px] mb-[10px]">
+                <div className="flex items-center gap-2 mt-[2px] mb-[8px]">
                   <div className="flex-1 h-[1.5px]" style={{ backgroundColor: C.gold }} />
                   <div className="w-[6px] h-[6px] rotate-45 shrink-0" style={{ backgroundColor: C.gold }} />
                   <div className="flex-1 h-[1.5px]" style={{ backgroundColor: C.gold }} />
                 </div>
-                <p className="text-[11px] tracking-[0.22em] uppercase font-medium" style={{ color: C.gold }}>
+                <p className="text-[10px] tracking-[0.22em] uppercase font-medium" style={{ color: C.gold }}>
                   Date
                 </p>
               </div>
             </div>
 
-            <div className="mb-[18px]">
+            <div className="mb-[12px]">
               <GoldSeal />
             </div>
 
-            <div className="flex items-center gap-3 w-[340px]">
+            <div className="flex items-center gap-3 w-[300px]">
               <div className="flex-1 h-[1.5px]" style={{ backgroundColor: C.gold }} />
               <div className="w-[6px] h-[6px] rotate-45 shrink-0" style={{ backgroundColor: C.gold }} />
-              <p className="text-[13px] tracking-[0.12em] whitespace-nowrap font-medium" style={{ color: C.goldDeep }}>
+              <p className="text-[12px] tracking-[0.12em] whitespace-nowrap font-medium" style={{ color: C.goldDeep }}>
                 www.musebyarshia.com
               </p>
               <div className="w-[6px] h-[6px] rotate-45 shrink-0" style={{ backgroundColor: C.gold }} />
