@@ -52,11 +52,19 @@ export default function AdminCertificatePage() {
 
     try {
       await document.fonts.ready
+      const bg = certRef.current.querySelector('img')
+      if (bg && !(bg as HTMLImageElement).complete) {
+        await new Promise<void>((resolve) => {
+          ;(bg as HTMLImageElement).onload = () => resolve()
+          ;(bg as HTMLImageElement).onerror = () => resolve()
+        })
+      }
+
       const { toPng } = await import('html-to-image')
       const dataUrl = await toPng(certRef.current, {
         cacheBust: true,
         pixelRatio: 2,
-        backgroundColor: '#F5F0E8',
+        backgroundColor: '#F5F0E1',
       })
 
       const link = document.createElement('a')
@@ -86,12 +94,12 @@ export default function AdminCertificatePage() {
 
   const fields: Array<{ name: keyof CertificateData; label: string; placeholder: string }> = [
     { name: 'title', label: 'Title *', placeholder: 'e.g. Golden Hour' },
-    { name: 'name', label: 'Name', placeholder: 'e.g. Shanzay Arshia' },
+    { name: 'name', label: 'Artist Name', placeholder: 'e.g. Shanzay Arshia' },
     { name: 'medium', label: 'Medium', placeholder: 'e.g. Acrylic on canvas' },
-    { name: 'size', label: 'Dimension', placeholder: 'e.g. 24 x 36 inches' },
+    { name: 'size', label: 'Dimensions', placeholder: 'e.g. 24 x 36 inches' },
     { name: 'year', label: 'Year', placeholder: 'e.g. 2026' },
     { name: 'certificateNumber', label: 'Certificate No.', placeholder: 'MBA-2026-1234' },
-    { name: 'issueDate', label: 'Date of Issue', placeholder: todayFormatted() },
+    { name: 'issueDate', label: 'Date', placeholder: todayFormatted() },
   ]
 
   return (
@@ -102,7 +110,7 @@ export default function AdminCertificatePage() {
             Certificate of Authenticity
           </h1>
           <p className="text-sm text-gray-500 mt-1">
-            Website-branded certificate — fill details, then download PNG for each order.
+            Botanical gold certificate — edit fields, then download PNG for each order.
           </p>
         </div>
         <div className="flex gap-2">
@@ -163,8 +171,8 @@ export default function AdminCertificatePage() {
         </div>
 
         <div className="print:p-0 overflow-auto">
-          <div className="print:hidden mb-3 text-xs text-gray-400 uppercase tracking-wider">
-            Live Preview — Original brand design
+          <div className="print:hidden mb-3 text-xs text-amber-700 uppercase tracking-wider font-medium">
+            Preview v3 — Botanical gold design
           </div>
           <div className="admin-print-cert inline-block shadow-lg print:shadow-none origin-top-left scale-[0.48] sm:scale-[0.55] md:scale-[0.65] lg:scale-[0.72] print:scale-100 print:origin-top-left">
             <CertificateOfAuthenticity ref={certRef} data={form} />
