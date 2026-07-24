@@ -161,11 +161,11 @@ export default function AdminCertificatePage() {
           </button>
         </div>
 
-        <div className="print:p-0 overflow-auto">
+        <div className="print:p-0 overflow-auto max-h-[85vh]">
           <div className="print:hidden mb-3 text-xs text-amber-700 uppercase tracking-wider font-medium">
-            Preview — A4 (210 × 297 mm)
+            Preview — Large certificate (1000 × 1400 px)
           </div>
-          <div className="admin-print-cert inline-block shadow-lg print:shadow-none origin-top-left scale-[0.42] sm:scale-[0.5] md:scale-[0.58] lg:scale-[0.65] print:scale-100">
+          <div className="admin-print-cert inline-block shadow-lg print:shadow-none origin-top-left scale-[0.38] sm:scale-[0.42] md:scale-[0.48] lg:scale-[0.55] print:scale-[0.75] print:origin-top-left">
             <CertificateOfAuthenticity ref={certRef} data={form} />
           </div>
         </div>
@@ -175,8 +175,6 @@ export default function AdminCertificatePage() {
         @media print {
           html,
           body {
-            width: 210mm !important;
-            height: 297mm !important;
             margin: 0 !important;
             padding: 0 !important;
             background: white !important;
@@ -191,24 +189,15 @@ export default function AdminCertificatePage() {
             visibility: visible !important;
           }
           .admin-print-cert {
-            position: fixed !important;
+            position: absolute !important;
             left: 0 !important;
             top: 0 !important;
-            width: 210mm !important;
-            height: 297mm !important;
             margin: 0 !important;
-            padding: 0 !important;
-            transform: none !important;
             box-shadow: none !important;
-            overflow: hidden !important;
-          }
-          .admin-print-cert > * {
-            width: 210mm !important;
-            height: 297mm !important;
           }
           @page {
-            size: A4 portrait;
-            margin: 0;
+            size: auto;
+            margin: 8mm;
           }
         }
       `}</style>
