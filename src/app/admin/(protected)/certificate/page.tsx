@@ -3,7 +3,9 @@ import { useRef, useState } from 'react'
 import { Download, Printer } from 'lucide-react'
 import {
   CertificateOfAuthenticity,
+  CERT_PAPER,
   type CertificateData,
+  type CertificatePaperSize,
 } from '@/components/certificate/CertificateOfAuthenticity'
 
 function todayFormatted() {
@@ -26,6 +28,7 @@ const emptyForm: CertificateData = {
 export default function AdminCertificatePage() {
   const certRef = useRef<HTMLDivElement>(null)
   const [form, setForm] = useState<CertificateData>(emptyForm)
+  const [paperSize, setPaperSize] = useState<CertificatePaperSize>('letter')
   const [downloading, setDownloading] = useState(false)
   const [error, setError] = useState('')
 
@@ -65,7 +68,8 @@ export default function AdminCertificatePage() {
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/(^-|-$)/g, '')
-      link.download = `certificate-${safeTitle || 'artwork'}.png`
+      const sizeTag = paperSize === 'letter' ? 'letter' : 'standard'
+      link.download = `certificate-${safeTitle || 'artwork'}-${sizeTag}.png`
       link.href = dataUrl
       link.click()
     } catch (err) {
@@ -94,6 +98,9 @@ export default function AdminCertificatePage() {
     { name: 'issueDate', label: 'Date', placeholder: todayFormatted() },
   ]
 
+  const paperMeta = CERT_PAPER[paperSize]
+  const isLetter = paperSize === 'letter'
+
   return (
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 print:hidden">
@@ -102,7 +109,7 @@ export default function AdminCertificatePage() {
             Certificate of Authenticity
           </h1>
           <p className="text-sm text-gray-500 mt-1">
-            Botanical gold certificate — edit fields, then download PNG for each order.
+            Botanical gold certificate — edit fields, then download PNG or print for each order.
           </p>
         </div>
         <div className="flex gap-2">
@@ -133,6 +140,37 @@ export default function AdminCertificatePage() {
 
       <div className="grid lg:grid-cols-[320px_1fr] gap-6 items-start">
         <div className="print:hidden bg-white border border-gray-200 rounded-lg p-5 space-y-3 sticky top-4">
+          <h2 className="font-semibold text-gray-900 text-sm mb-1">Paper Size</h2>
+          <div className="space-y-2 mb-4">
+            {(Object.keys(CERT_PAPER) as CertificatePaperSize[]).map((key) => (
+              <label
+                key={key}
+                className={`flex items-start gap-2.5 border px-3 py-2.5 cursor-pointer text-sm transition-colors ${
+                  paperSize === key
+                    ? 'border-ink bg-gray-50'
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="paperSize"
+                  value={key}
+                  checked={paperSize === key}
+                  onChange={() => setPaperSize(key)}
+                  className="mt-0.5"
+                />
+                <span>
+                  <span className="block font-medium text-gray-900">{CERT_PAPER[key].label}</span>
+                  {key === 'letter' && (
+                    <span className="block text-xs text-gray-500 mt-0.5">
+                      Best for printing on standard certificate paper
+                    </span>
+                  )}
+                </span>
+              </label>
+            ))}
+          </div>
+
           <h2 className="font-semibold text-gray-900 text-sm mb-1">Editable Fields</h2>
           {fields.map((field) => (
             <div key={field.name}>
@@ -163,10 +201,14 @@ export default function AdminCertificatePage() {
 
         <div className="print:p-0 overflow-auto max-h-[85vh]">
           <div className="print:hidden mb-3 text-xs text-amber-700 uppercase tracking-wider font-medium">
-            Preview — Filled certificate (1100 × 1500 px)
+            Preview — {paperMeta.label}
+            {isLetter ? ' · prints on 8.5″ × 11″' : ''}
           </div>
-          <div className="admin-print-cert inline-block shadow-lg print:shadow-none origin-top-left scale-[0.34] sm:scale-[0.38] md:scale-[0.44] lg:scale-[0.5] print:scale-[0.68] print:origin-top-left">
-            <CertificateOfAuthenticity ref={certRef} data={form} />
+          <div
+            data-print-size={paperSize}
+            className="admin-print-cert inline-block shadow-lg print:shadow-none origin-top-left scale-[0.3] sm:scale-[0.34] md:scale-[0.4] lg:scale-[0.46]"
+          >
+            <CertificateOfAuthenticity ref={certRef} data={form} paperSize={paperSize} />
           </div>
         </div>
       </div>
@@ -194,10 +236,19 @@ export default function AdminCertificatePage() {
             top: 0 !important;
             margin: 0 !important;
             box-shadow: none !important;
+            transform-origin: top left !important;
+          }
+          /* 1275×1650 @ 150dpi → exact 8.5″ × 11″ */
+          .admin-print-cert[data-print-size='letter'] {
+            transform: scale(calc(8.5in / 1275px)) !important;
+          }
+          /* Standard canvas scaled to fit letter width */
+          .admin-print-cert[data-print-size='standard'] {
+            transform: scale(calc(8.5in / 1100px)) !important;
           }
           @page {
-            size: auto;
-            margin: 8mm;
+            size: letter portrait;
+            margin: 0;
           }
         }
       `}</style>

@@ -11,6 +11,16 @@ const C = {
   charcoal: '#3C3631',
 }
 
+/** Design canvas sizes (px). Letter = 8.5×11 at 150 dpi for crisp print/PNG. */
+export const CERT_PAPER = {
+  standard: { width: 1100, height: 1500, label: 'Filled (1100 × 1500)' },
+  letter: { width: 1275, height: 1650, label: 'US Letter (8.5″ × 11″)' },
+} as const
+
+export type CertificatePaperSize = keyof typeof CERT_PAPER
+
+const BASE_W = CERT_PAPER.standard.width
+
 const baskerville = Libre_Baskerville({
   subsets: ['latin'],
   weight: ['400', '700'],
@@ -48,21 +58,29 @@ export interface CertificateData {
 
 interface Props {
   data: CertificateData
+  paperSize?: CertificatePaperSize
 }
 
-function Divider() {
+function Divider({ scale }: { scale: number }) {
   return (
-    <div className="flex items-center gap-3 w-[380px]">
-      <div className="flex-1 h-[2.5px]" style={{ backgroundColor: C.goldMid }} />
-      <div className="w-[11px] h-[11px] rotate-45 shrink-0" style={{ backgroundColor: C.goldMid }} />
-      <div className="flex-1 h-[2.5px]" style={{ backgroundColor: C.goldMid }} />
+    <div className="flex items-center gap-3" style={{ width: 380 * scale }}>
+      <div className="flex-1" style={{ height: 2.5 * scale, backgroundColor: C.goldMid }} />
+      <div
+        className="rotate-45 shrink-0"
+        style={{ width: 11 * scale, height: 11 * scale, backgroundColor: C.goldMid }}
+      />
+      <div className="flex-1" style={{ height: 2.5 * scale, backgroundColor: C.goldMid }} />
     </div>
   )
 }
 
-function GoldSeal() {
+function GoldSeal({ scale }: { scale: number }) {
+  const size = 240 * scale
   return (
-    <div className="relative w-[240px] h-[240px] flex items-center justify-center shrink-0">
+    <div
+      className="relative flex items-center justify-center shrink-0"
+      style={{ width: size, height: size }}
+    >
       <svg viewBox="0 0 200 200" className="absolute inset-0 w-full h-full drop-shadow-md" aria-hidden>
         <defs>
           <radialGradient id="sealGoldFill" cx="35%" cy="30%" r="75%">
@@ -113,8 +131,13 @@ function GoldSeal() {
         <circle cx="100" cy="158" r="2.4" fill="#FDF8EC" />
       </svg>
       <p
-        className={`${baskerville.className} relative z-10 text-[22px] tracking-[0.2em] font-bold`}
-        style={{ color: '#FDF8EC', textShadow: '0 1px 3px rgba(80,50,0,0.4)' }}
+        className={`${baskerville.className} relative z-10 font-bold`}
+        style={{
+          color: '#FDF8EC',
+          textShadow: '0 1px 3px rgba(80,50,0,0.4)',
+          fontSize: 22 * scale,
+          letterSpacing: '0.2em',
+        }}
       >
         ORIGINAL
       </p>
@@ -123,7 +146,10 @@ function GoldSeal() {
 }
 
 export const CertificateOfAuthenticity = forwardRef<HTMLDivElement, Props>(
-  function CertificateOfAuthenticity({ data }, ref) {
+  function CertificateOfAuthenticity({ data, paperSize = 'standard' }, ref) {
+    const { width, height } = CERT_PAPER[paperSize]
+    const s = width / BASE_W
+
     const title = data.title.trim() || 'Untitled'
     const name = data.name.trim() || 'Shanzay Arshia'
     const year = data.year.trim() || '—'
@@ -137,13 +163,20 @@ export const CertificateOfAuthenticity = forwardRef<HTMLDivElement, Props>(
       { label: 'Year', value: year },
     ]
 
+    const creamInset = 22 * s
+    const borderOuter = 32 * s
+    const borderInner = 44 * s
+    const diamond = 28 * s
+    const contentInset = 60 * s
+
     return (
       <div
         ref={ref}
+        data-paper-size={paperSize}
         className={`relative select-none ${montserrat.className}`}
         style={{
-          width: 1100,
-          height: 1500,
+          width,
+          height,
           backgroundColor: C.cream,
           color: C.charcoal,
           boxSizing: 'border-box',
@@ -168,57 +201,102 @@ export const CertificateOfAuthenticity = forwardRef<HTMLDivElement, Props>(
         />
 
         {/* Safe cream margin — keeps border fully on the page */}
-        <div className="absolute inset-0 pointer-events-none z-[4]" style={{ border: `22px solid ${C.cream}` }} />
+        <div
+          className="absolute inset-0 pointer-events-none z-[4]"
+          style={{ border: `${creamInset}px solid ${C.cream}` }}
+        />
 
         {/* Double gold border — fully inside */}
-        <div className="absolute pointer-events-none z-[5]" style={{ inset: 32, border: `2.5px solid ${C.goldMid}` }} />
-        <div className="absolute pointer-events-none z-[5]" style={{ inset: 44, border: `1.5px solid ${C.gold}` }} />
+        <div
+          className="absolute pointer-events-none z-[5]"
+          style={{ inset: borderOuter, border: `${2.5 * s}px solid ${C.goldMid}` }}
+        />
+        <div
+          className="absolute pointer-events-none z-[5]"
+          style={{ inset: borderInner, border: `${1.5 * s}px solid ${C.gold}` }}
+        />
 
         {[
-          { top: 28, left: 28 },
-          { top: 28, right: 28 },
-          { bottom: 28, left: 28 },
-          { bottom: 28, right: 28 },
+          { top: diamond, left: diamond },
+          { top: diamond, right: diamond },
+          { bottom: diamond, left: diamond },
+          { bottom: diamond, right: diamond },
         ].map((pos, i) => (
           <div
             key={i}
-            className="absolute z-[6] w-3.5 h-3.5 rotate-45"
-            style={{ ...pos, backgroundColor: C.goldMid }}
+            className="absolute z-[6] rotate-45"
+            style={{
+              ...pos,
+              width: 14 * s,
+              height: 14 * s,
+              backgroundColor: C.goldMid,
+            }}
           />
         ))}
 
-        <div className="absolute z-[6] w-3 h-3 rotate-45 left-1/2 -translate-x-1/2" style={{ top: 28, backgroundColor: C.goldMid }} />
-        <div className="absolute z-[6] w-3 h-3 rotate-45 left-1/2 -translate-x-1/2" style={{ bottom: 28, backgroundColor: C.goldMid }} />
-        <div className="absolute z-[6] w-3 h-3 rotate-45 top-1/2 -translate-y-1/2" style={{ left: 28, backgroundColor: C.goldMid }} />
-        <div className="absolute z-[6] w-3 h-3 rotate-45 top-1/2 -translate-y-1/2" style={{ right: 28, backgroundColor: C.goldMid }} />
+        <div
+          className="absolute z-[6] rotate-45 left-1/2 -translate-x-1/2"
+          style={{ top: diamond, width: 12 * s, height: 12 * s, backgroundColor: C.goldMid }}
+        />
+        <div
+          className="absolute z-[6] rotate-45 left-1/2 -translate-x-1/2"
+          style={{ bottom: diamond, width: 12 * s, height: 12 * s, backgroundColor: C.goldMid }}
+        />
+        <div
+          className="absolute z-[6] rotate-45 top-1/2 -translate-y-1/2"
+          style={{ left: diamond, width: 12 * s, height: 12 * s, backgroundColor: C.goldMid }}
+        />
+        <div
+          className="absolute z-[6] rotate-45 top-1/2 -translate-y-1/2"
+          style={{ right: diamond, width: 12 * s, height: 12 * s, backgroundColor: C.goldMid }}
+        />
 
-        {/* Fill the full inner area evenly — no hollow gap */}
         <div
           className="absolute z-10 flex flex-col items-center justify-evenly"
-          style={{ inset: 60 }}
+          style={{ inset: contentInset }}
         >
-          {/* Header block */}
           <div className="flex flex-col items-center w-full">
-            <p className="text-[16px] tracking-[0.52em] uppercase font-semibold mb-3" style={{ color: C.goldMid }}>
+            <p
+              className="uppercase font-semibold"
+              style={{
+                color: C.goldMid,
+                fontSize: 16 * s,
+                letterSpacing: '0.52em',
+                marginBottom: 12 * s,
+              }}
+            >
               Original Artwork
             </p>
             <h1
-              className={`${baskerville.className} text-[72px] italic font-normal leading-none tracking-wide mb-2`}
-              style={{ color: C.charcoal }}
+              className={`${baskerville.className} italic font-normal leading-none tracking-wide`}
+              style={{ color: C.charcoal, fontSize: 72 * s, marginBottom: 8 * s }}
             >
               Muse by Arshia
             </h1>
-            <Divider />
-            <h2 className="text-[22px] tracking-[0.36em] uppercase font-semibold mt-2" style={{ color: C.charcoal }}>
+            <Divider scale={s} />
+            <h2
+              className="uppercase font-semibold"
+              style={{
+                color: C.charcoal,
+                fontSize: 22 * s,
+                letterSpacing: '0.36em',
+                marginTop: 8 * s,
+              }}
+            >
               Certificate of Authenticity
             </h2>
           </div>
 
-          {/* Body + title */}
-          <div className="flex flex-col items-center w-full px-6">
+          <div className="flex flex-col items-center w-full" style={{ paddingLeft: 24 * s, paddingRight: 24 * s }}>
             <p
-              className={`${garamond.className} text-center text-[28px] leading-[1.55] max-w-[820px] mb-2`}
-              style={{ color: C.charcoal }}
+              className={`${garamond.className} text-center`}
+              style={{
+                color: C.charcoal,
+                fontSize: 28 * s,
+                lineHeight: 1.55,
+                maxWidth: 820 * s,
+                marginBottom: 8 * s,
+              }}
             >
               This is to certify that the artwork described below is an original
               painting created entirely by{' '}
@@ -228,81 +306,117 @@ export const CertificateOfAuthenticity = forwardRef<HTMLDivElement, Props>(
               .
             </p>
             <p
-              className={`${garamond.className} text-center text-[24px] leading-[1.5] max-w-[760px] mb-6`}
-              style={{ color: C.charcoal }}
+              className={`${garamond.className} text-center`}
+              style={{
+                color: C.charcoal,
+                fontSize: 24 * s,
+                lineHeight: 1.5,
+                maxWidth: 760 * s,
+                marginBottom: 24 * s,
+              }}
             >
               All copyright and reproduction rights are retained by the artist.
             </p>
             <p
-              className={`${baskerville.className} text-[64px] italic text-center leading-snug px-4`}
-              style={{ color: C.goldMid }}
+              className={`${baskerville.className} italic text-center leading-snug`}
+              style={{ color: C.goldMid, fontSize: 64 * s, paddingLeft: 16 * s, paddingRight: 16 * s }}
             >
               &ldquo;{title}&rdquo;
             </p>
           </div>
 
-          {/* Details */}
-          <div className="w-[560px] space-y-6">
+          <div className="space-y-6" style={{ width: 560 * s }}>
             {details.map((item) => (
               <div key={item.label} className="grid grid-cols-[1fr_22px_1.55fr] items-baseline">
-                <span className={`${garamond.className} text-[28px] text-right`} style={{ color: C.charcoal }}>
+                <span
+                  className={`${garamond.className} text-right`}
+                  style={{ color: C.charcoal, fontSize: 28 * s }}
+                >
                   {item.label}
                 </span>
-                <span className="text-center text-[22px]" style={{ color: C.goldMid }}>
+                <span className="text-center" style={{ color: C.goldMid, fontSize: 22 * s }}>
                   |
                 </span>
-                <span className={`${garamond.className} text-[29px] italic`} style={{ color: C.charcoal }}>
+                <span
+                  className={`${garamond.className} italic`}
+                  style={{ color: C.charcoal, fontSize: 29 * s }}
+                >
                   {item.value}
                 </span>
               </div>
             ))}
           </div>
 
-          {/* Signature + date */}
-          <div className="w-full max-w-[700px] flex justify-between items-end px-4">
-            <div className="text-center w-[280px]">
-              <p className={`${vibes.className} text-[64px] leading-none`} style={{ color: C.goldMid }}>
+          <div
+            className="w-full flex justify-between items-end"
+            style={{ maxWidth: 700 * s, paddingLeft: 16 * s, paddingRight: 16 * s }}
+          >
+            <div className="text-center" style={{ width: 280 * s }}>
+              <p
+                className={`${vibes.className} leading-none`}
+                style={{ color: C.goldMid, fontSize: 64 * s }}
+              >
                 Shanzay
               </p>
-              <div className="flex items-center gap-2 mt-1 mb-2">
-                <div className="flex-1 h-[2.5px]" style={{ backgroundColor: C.goldMid }} />
-                <div className="w-[9px] h-[9px] rotate-45 shrink-0" style={{ backgroundColor: C.goldMid }} />
-                <div className="flex-1 h-[2.5px]" style={{ backgroundColor: C.goldMid }} />
+              <div className="flex items-center gap-2" style={{ marginTop: 4 * s, marginBottom: 8 * s }}>
+                <div className="flex-1" style={{ height: 2.5 * s, backgroundColor: C.goldMid }} />
+                <div
+                  className="rotate-45 shrink-0"
+                  style={{ width: 9 * s, height: 9 * s, backgroundColor: C.goldMid }}
+                />
+                <div className="flex-1" style={{ height: 2.5 * s, backgroundColor: C.goldMid }} />
               </div>
-              <p className="text-[14px] tracking-[0.1em] uppercase font-medium" style={{ color: C.goldMid }}>
+              <p
+                className="uppercase font-medium"
+                style={{ color: C.goldMid, fontSize: 14 * s, letterSpacing: '0.1em' }}
+              >
                 Artist Signature / Shanzay Arshia
               </p>
             </div>
 
-            <div className="text-center w-[240px]">
+            <div className="text-center" style={{ width: 240 * s }}>
               <p
-                className={`${garamond.className} text-[26px] italic h-[64px] flex items-end justify-center`}
-                style={{ color: C.charcoal }}
+                className={`${garamond.className} italic flex items-end justify-center`}
+                style={{ color: C.charcoal, fontSize: 26 * s, height: 64 * s }}
               >
                 {issueDate}
               </p>
-              <div className="flex items-center gap-2 mt-1 mb-2">
-                <div className="flex-1 h-[2.5px]" style={{ backgroundColor: C.goldMid }} />
-                <div className="w-[9px] h-[9px] rotate-45 shrink-0" style={{ backgroundColor: C.goldMid }} />
-                <div className="flex-1 h-[2.5px]" style={{ backgroundColor: C.goldMid }} />
+              <div className="flex items-center gap-2" style={{ marginTop: 4 * s, marginBottom: 8 * s }}>
+                <div className="flex-1" style={{ height: 2.5 * s, backgroundColor: C.goldMid }} />
+                <div
+                  className="rotate-45 shrink-0"
+                  style={{ width: 9 * s, height: 9 * s, backgroundColor: C.goldMid }}
+                />
+                <div className="flex-1" style={{ height: 2.5 * s, backgroundColor: C.goldMid }} />
               </div>
-              <p className="text-[14px] tracking-[0.22em] uppercase font-medium" style={{ color: C.goldMid }}>
+              <p
+                className="uppercase font-medium"
+                style={{ color: C.goldMid, fontSize: 14 * s, letterSpacing: '0.22em' }}
+              >
                 Date
               </p>
             </div>
           </div>
 
-          {/* Seal + footer */}
           <div className="flex flex-col items-center">
-            <GoldSeal />
-            <div className="flex items-center gap-3 w-[420px] mt-5">
-              <div className="flex-1 h-[2.5px]" style={{ backgroundColor: C.goldMid }} />
-              <div className="w-[9px] h-[9px] rotate-45 shrink-0" style={{ backgroundColor: C.goldMid }} />
-              <p className="text-[16px] tracking-[0.12em] whitespace-nowrap font-medium" style={{ color: C.goldDeep }}>
+            <GoldSeal scale={s} />
+            <div className="flex items-center gap-3" style={{ width: 420 * s, marginTop: 20 * s }}>
+              <div className="flex-1" style={{ height: 2.5 * s, backgroundColor: C.goldMid }} />
+              <div
+                className="rotate-45 shrink-0"
+                style={{ width: 9 * s, height: 9 * s, backgroundColor: C.goldMid }}
+              />
+              <p
+                className="whitespace-nowrap font-medium"
+                style={{ color: C.goldDeep, fontSize: 16 * s, letterSpacing: '0.12em' }}
+              >
                 www.musebyarshia.com
               </p>
-              <div className="w-[9px] h-[9px] rotate-45 shrink-0" style={{ backgroundColor: C.goldMid }} />
-              <div className="flex-1 h-[2.5px]" style={{ backgroundColor: C.goldMid }} />
+              <div
+                className="rotate-45 shrink-0"
+                style={{ width: 9 * s, height: 9 * s, backgroundColor: C.goldMid }}
+              />
+              <div className="flex-1" style={{ height: 2.5 * s, backgroundColor: C.goldMid }} />
             </div>
           </div>
         </div>
