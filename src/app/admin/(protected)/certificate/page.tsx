@@ -163,9 +163,9 @@ export default function AdminCertificatePage() {
 
         <div className="print:p-0 overflow-auto max-h-[85vh]">
           <div className="print:hidden mb-3 text-xs text-amber-700 uppercase tracking-wider font-medium">
-            Preview — Large certificate (1000 × 1400 px)
+            Preview — Filled certificate (1100 × 1500 px)
           </div>
-          <div className="admin-print-cert inline-block shadow-lg print:shadow-none origin-top-left scale-[0.38] sm:scale-[0.42] md:scale-[0.48] lg:scale-[0.55] print:scale-[0.75] print:origin-top-left">
+          <div className="admin-print-cert inline-block shadow-lg print:shadow-none origin-top-left scale-[0.34] sm:scale-[0.38] md:scale-[0.44] lg:scale-[0.5] print:scale-[0.68] print:origin-top-left">
             <CertificateOfAuthenticity ref={certRef} data={form} />
           </div>
         </div>
